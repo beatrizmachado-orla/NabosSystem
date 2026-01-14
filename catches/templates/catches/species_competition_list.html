@@ -1,0 +1,96 @@
+{% extends "core/_base.html" %}
+{% block title %}Espécies da Competição • Equipe Nabos{% endblock %}
+
+{% block content %}
+<section class="mb-8">
+  <div class="rounded-3xl border border-zinc-800 bg-zinc-950/60 p-6 md:p-8 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-black/70 via-black/30 to-transparent"></div>
+
+    <div class="relative flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-semibold">Espécies de Competição</h1>
+        <p class="text-zinc-300 text-sm mt-2 max-w-2xl">
+          Lista oficial do que conta no ranking. Clique em uma espécie para abrir o perfil.
+        </p>
+      </div>
+
+      <form method="get" class="w-full md:w-auto">
+        <div class="flex gap-2">
+          <input name="q" value="{{ q|default:'' }}"
+                 placeholder="Buscar espécie..."
+                 class="w-full md:w-72 rounded-2xl border border-zinc-800 bg-zinc-950/40 px-4 py-3 text-sm outline-none
+                        focus:ring-2 focus:ring-zinc-600 focus:border-zinc-700" />
+          <button class="rounded-2xl bg-white text-zinc-900 font-medium px-5 py-3 hover:opacity-90 transition">
+            Buscar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+  {% for s in species_list %}
+    <a href="{% url 'species_detail' s.slug %}"
+       class="group rounded-3xl border border-zinc-800 bg-zinc-950/40 overflow-hidden hover:bg-zinc-900/60 transition">
+
+      {# capa: usa primeira foto da espécie se existir #}
+      <div class="relative">
+        <div class="aspect-[16/10] bg-zinc-900 overflow-hidden">
+          {% with photo=s.photos.all.0 %}
+            {% if photo and photo.image %}
+              <img src="{{ photo.image.url }}"
+                   class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                   alt="{{ s.name }}">
+            {% elif s.image_url %}
+              <img src="{{ s.image_url }}"
+                   class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                   alt="{{ s.name }}">
+            {% else %}
+              <div class="w-full h-full flex items-center justify-center text-zinc-500 text-sm">
+                Sem foto
+              </div>
+            {% endif %}
+          {% endwith %}
+        </div>
+
+        <div class="absolute top-3 left-3 flex gap-2">
+          <span class="rounded-full bg-black/60 backdrop-blur px-3 py-1 text-xs text-zinc-100 border border-white/10">
+            Mín: {{ s.min_length_cm|floatformat:0 }} cm
+          </span>
+          <span class="rounded-full bg-black/60 backdrop-blur px-3 py-1 text-xs text-zinc-100 border border-white/10">
+            {{ s.points_per_cm|floatformat:0 }} pts/cm
+          </span>
+        </div>
+
+        <div class="absolute top-3 right-3">
+          <span class="rounded-full bg-black/60 backdrop-blur px-3 py-1 text-xs text-zinc-100 border border-white/10">
+            🎣 {{ s.catches_count|default:0 }}
+          </span>
+        </div>
+      </div>
+
+      <div class="p-5">
+        <div class="flex items-center justify-between gap-2">
+          <div class="font-semibold truncate">{{ s.name }}</div>
+          <span class="text-zinc-400 group-hover:text-white transition">→</span>
+        </div>
+
+        <div class="mt-2 text-sm text-zinc-400 line-clamp-2">
+          {% if s.summary %}{{ s.summary }}{% else %}Sem resumo ainda.{% endif %}
+        </div>
+
+        <div class="mt-4 text-xs text-zinc-500 flex items-center justify-between">
+          <span class="truncate">{% if s.scientific_name %}{{ s.scientific_name }}{% else %}&nbsp;{% endif %}</span>
+          <span class="text-zinc-400 group-hover:text-white transition">Ver perfil</span>
+        </div>
+      </div>
+    </a>
+  {% empty %}
+    <div class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 text-zinc-400">
+      Nenhuma espécie cadastrada como “aceita na competição”.
+    </div>
+  {% endfor %}
+</section>
+
+{% endblock %}

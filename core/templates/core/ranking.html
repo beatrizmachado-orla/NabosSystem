@@ -1,0 +1,220 @@
+{% extends "core/_base.html" %}
+{% block title %}Ranking • Equipe Nabos{% endblock %}
+
+{% block content %}
+
+<!-- PAGE HEADER -->
+<section class="mb-8">
+  <div class="rounded-3xl border border-zinc-800 bg-zinc-950/60 p-6 md:p-8 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-black/70 via-black/30 to-transparent"></div>
+
+    <div class="relative flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-semibold">Ranking</h1>
+        <p class="text-zinc-200 text-sm mt-2 max-w-2xl">
+          Pódio com os 3 primeiros + lista completa. A pontuação considera apenas capturas válidas (tamanho mínimo).
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <a href="{% url 'group' %}"
+           class="rounded-xl border border-zinc-700 bg-zinc-900/40 px-3 py-2 hover:bg-zinc-900/70 transition text-sm">
+          Ver membros
+        </a>
+        <a href="{% url 'home' %}"
+           class="text-sm text-zinc-200 hover:text-white transition">
+          ← Voltar
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="mx-auto max-w-6xl">
+
+  <!-- QUICK STATS (opcional) -->
+  <section class="grid gap-4 md:grid-cols-3 mb-8">
+    <div class="rounded-2xl border border-zinc-800 bg-zinc-900/30 p-5">
+      <div class="text-xs text-zinc-400">Total de membros no ranking</div>
+      <div class="mt-2 text-2xl font-semibold">
+        {{ ranking_list|length }}
+      </div>
+    </div>
+
+    <div class="rounded-2xl border border-zinc-800 bg-zinc-900/30 p-5">
+      <div class="text-xs text-zinc-400">Líder atual</div>
+      <div class="mt-2 text-lg font-semibold truncate">
+        {% if podium_1 %}{{ podium_1.member.name }}{% else %}—{% endif %}
+      </div>
+      <div class="text-sm text-zinc-300">
+        {% if podium_1 %}{{ podium_1.points|floatformat:0 }} pts{% else %}0 pts{% endif %}
+      </div>
+    </div>
+
+    <div class="rounded-2xl border border-zinc-800 bg-zinc-900/30 p-5">
+      <div class="text-xs text-zinc-400">Regras</div>
+      <div class="mt-2 text-sm text-zinc-300">
+        Comprimento mínimo por espécie + multiplicador por cm.
+      </div>
+      <div class="text-xs text-zinc-500 mt-2">
+        (capturas abaixo do mínimo não contam)
+      </div>
+    </div>
+  </section>
+
+  <!-- LAYOUT: PÓDIO + LISTA -->
+  <section class="grid gap-6 lg:grid-cols-[420px_1fr] items-start">
+
+    <!-- PÓDIO -->
+    <div class="rounded-3xl border border-zinc-800 bg-zinc-900/30 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-semibold">Pódio</h2>
+        <span class="text-xs text-zinc-400">Top 3</span>
+      </div>
+
+      <div class="grid grid-cols-3 items-end gap-4">
+
+        <!-- 2º -->
+        <a href="{% if podium_2 %}{% url 'member_detail' podium_2.member.id %}{% else %}#{% endif %}"
+           class="text-center group">
+          <div class="text-xs text-zinc-400 mb-2">02</div>
+
+          <div class="mx-auto h-14 w-14 rounded-full bg-zinc-800 overflow-hidden ring-1 ring-zinc-700 group-hover:ring-zinc-500 transition">
+            {% if podium_2 and podium_2.member.photo %}
+              <img src="{{ podium_2.member.photo.url }}" class="h-full w-full object-cover" alt="{{ podium_2.member.name }}">
+            {% endif %}
+          </div>
+
+          <div class="mt-3 text-sm font-medium truncate group-hover:text-white transition">
+            {% if podium_2 %}{{ podium_2.member.name }}{% else %}—{% endif %}
+          </div>
+          <div class="text-xs text-zinc-400">
+            {% if podium_2 %}{{ podium_2.points|floatformat:0 }} pts{% else %}0 pts{% endif %}
+          </div>
+
+          <div class="mt-3 h-16 rounded-2xl bg-zinc-950/40 border border-zinc-800 group-hover:bg-zinc-950/60 transition"></div>
+        </a>
+
+        <!-- 1º -->
+        <a href="{% if podium_1 %}{% url 'member_detail' podium_1.member.id %}{% else %}#{% endif %}"
+           class="text-center group">
+          <div class="text-xs text-zinc-300 mb-2">01</div>
+
+          <div class="mx-auto h-20 w-20 rounded-full bg-zinc-800 overflow-hidden ring-2 ring-zinc-600 group-hover:ring-zinc-400 transition">
+            {% if podium_1 and podium_1.member.photo %}
+              <img src="{{ podium_1.member.photo.url }}" class="h-full w-full object-cover" alt="{{ podium_1.member.name }}">
+            {% endif %}
+          </div>
+
+          <div class="mt-3 text-base font-semibold truncate group-hover:text-white transition">
+            {% if podium_1 %}{{ podium_1.member.name }}{% else %}—{% endif %}
+          </div>
+          <div class="text-sm text-zinc-300">
+            {% if podium_1 %}{{ podium_1.points|floatformat:0 }} pts{% else %}0 pts{% endif %}
+          </div>
+
+          <div class="mt-3 h-24 rounded-2xl bg-zinc-950/40 border border-zinc-800 group-hover:bg-zinc-950/60 transition"></div>
+        </a>
+
+        <!-- 3º -->
+        <a href="{% if podium_3 %}{% url 'member_detail' podium_3.member.id %}{% else %}#{% endif %}"
+           class="text-center group">
+          <div class="text-xs text-zinc-400 mb-2">03</div>
+
+          <div class="mx-auto h-14 w-14 rounded-full bg-zinc-800 overflow-hidden ring-1 ring-zinc-700 group-hover:ring-zinc-500 transition">
+            {% if podium_3 and podium_3.member.photo %}
+              <img src="{{ podium_3.member.photo.url }}" class="h-full w-full object-cover" alt="{{ podium_3.member.name }}">
+            {% endif %}
+          </div>
+
+          <div class="mt-3 text-sm font-medium truncate group-hover:text-white transition">
+            {% if podium_3 %}{{ podium_3.member.name }}{% else %}—{% endif %}
+          </div>
+          <div class="text-xs text-zinc-400">
+            {% if podium_3 %}{{ podium_3.points|floatformat:0 }} pts{% else %}0 pts{% endif %}
+          </div>
+
+          <div class="mt-3 h-12 rounded-2xl bg-zinc-950/40 border border-zinc-800 group-hover:bg-zinc-950/60 transition"></div>
+        </a>
+
+      </div>
+
+      <div class="mt-6 text-xs text-zinc-500">
+        Dica: clique em qualquer pessoa do pódio para abrir o perfil.
+      </div>
+    </div>
+
+    <!-- LISTA -->
+    <div class="rounded-3xl border border-zinc-800 bg-zinc-900/30 overflow-hidden">
+      <div class="px-5 py-4 border-b border-zinc-800 flex items-center justify-between">
+        <h2 class="font-semibold">Lista completa</h2>
+        <span class="text-xs text-zinc-400">{{ ranking_list|length }} participantes</span>
+      </div>
+
+      <div class="divide-y divide-zinc-800">
+        {% for row in ranking_list %}
+          <a href="{% url 'member_detail' row.member.id %}"
+             class="block px-5 py-4 hover:bg-zinc-900/60 transition">
+            <div class="flex items-center gap-4">
+
+              <!-- posição -->
+              <div class="w-12 text-sm text-zinc-400 font-medium tabular-nums">
+                {% if row.pos < 10 %}0{% endif %}{{ row.pos }}
+              </div>
+
+              <!-- avatar -->
+              <div class="h-12 w-12 rounded-full bg-zinc-800 overflow-hidden ring-1 ring-zinc-700 shrink-0">
+                {% if row.member.photo %}
+                  <img src="{{ row.member.photo.url }}" class="h-full w-full object-cover" alt="{{ row.member.name }}">
+                {% endif %}
+              </div>
+
+              <!-- info -->
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2">
+                  <div class="font-medium truncate">{{ row.member.name }}</div>
+                  {% if row.member.nickname %}
+                    <span class="text-xs text-zinc-300 bg-zinc-800/60 border border-zinc-700 rounded-full px-2 py-1">
+                      {{ row.member.nickname }}
+                    </span>
+                  {% endif %}
+                </div>
+
+                <div class="mt-1 flex flex-wrap gap-2 text-xs text-zinc-400">
+                  {% if row.catches_count != None %}
+                    <span class="rounded-full border border-zinc-800 bg-zinc-950/40 px-2 py-1">🎣 {{ row.catches_count }} capturas</span>
+                  {% endif %}
+
+                  {% if row.best_catch %}
+                    <span class="rounded-full border border-zinc-800 bg-zinc-950/40 px-2 py-1">
+                      🐟 {{ row.best_catch.species.name }} • {{ row.best_catch.length_cm|floatformat:0 }}cm
+                    </span>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- pontos -->
+              <div class="text-right shrink-0">
+                <div class="text-sm font-semibold tabular-nums">
+                  {{ row.points|floatformat:0 }} pts
+                </div>
+                <div class="text-xs text-zinc-500">
+                  Ver perfil →
+                </div>
+              </div>
+
+            </div>
+          </a>
+        {% empty %}
+          <div class="px-5 py-10 text-zinc-400 text-center">
+            Sem membros para exibir no ranking.
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </section>
+
+</div>
+
+{% endblock %}

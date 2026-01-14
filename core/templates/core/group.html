@@ -1,0 +1,275 @@
+{% extends "core/_base.html" %}
+{% block title %}Grupo • Kayak Fishing{% endblock %}
+
+{% block content %}
+
+<div class="flex flex-col gap-6 mb-6">
+  <div class="flex items-end justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold">Membros</h1>
+      <p class="text-zinc-400 text-sm">Busque por nome ou apelido e use os filtros ao lado.</p>
+    </div>
+
+    <!-- botão mobile p/ abrir filtros -->
+    <button id="filtersBtn"
+            class="md:hidden rounded-xl border border-zinc-700 bg-zinc-900/40 px-4 py-2 hover:bg-zinc-900/70 transition">
+      Filtros
+    </button>
+  </div>
+
+  <!-- SEARCH -->
+  <form method="get" class="flex flex-col sm:flex-row gap-3">
+    <div class="relative flex-1">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">🔎</span>
+      <input
+        name="q"
+        value="{{ q|default:'' }}"
+        placeholder="Buscar por nome ou apelido…"
+        class="w-full rounded-2xl border border-zinc-800 bg-zinc-950/40 px-10 py-3 text-sm outline-none
+               focus:ring-2 focus:ring-zinc-600 focus:border-zinc-700"
+      />
+    </div>
+
+    <div class="flex gap-3">
+      <button type="submit"
+              class="rounded-2xl bg-white text-zinc-900 font-medium px-5 py-3 hover:opacity-90 transition">
+        Buscar
+      </button>
+
+      {% if q or selected_gender or selected_age %}
+        <a href="{% url 'group' %}"
+           class="rounded-2xl border border-zinc-700 px-5 py-3 hover:bg-zinc-900/70 transition text-sm text-zinc-200">
+          Limpar
+        </a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<div class="grid gap-6 md:grid-cols-[280px_1fr]">
+
+  <!-- SIDEBAR FILTERS (desktop) -->
+  <aside class="hidden md:block">
+    <div class="rounded-3xl border border-zinc-800 bg-zinc-950/50 p-5 sticky top-24">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-semibold">Filtros</h2>
+        {% if q or selected_gender or selected_age %}
+          <a href="{% url 'group' %}" class="text-xs text-zinc-400 hover:text-white">Limpar</a>
+        {% endif %}
+      </div>
+
+      <form method="get" class="space-y-5">
+        <!-- mantém a busca ao aplicar filtros -->
+        <input type="hidden" name="q" value="{{ q|default:'' }}">
+
+        <!-- GÊNERO -->
+        <div>
+          <div class="text-xs uppercase tracking-wide text-zinc-400 mb-2">Gênero</div>
+          <div class="grid gap-2">
+            <label class="flex items-center gap-2 text-sm text-zinc-200">
+              <input type="radio" name="gender" value=""
+                     class="accent-white"
+                     {% if not selected_gender %}checked{% endif %}>
+              Todos
+            </label>
+
+            <label class="flex items-center gap-2 text-sm text-zinc-200">
+              <input type="radio" name="gender" value="F"
+                     class="accent-white"
+                     {% if selected_gender == "F" %}checked{% endif %}>
+              Feminino
+            </label>
+
+            <label class="flex items-center gap-2 text-sm text-zinc-200">
+              <input type="radio" name="gender" value="M"
+                     class="accent-white"
+                     {% if selected_gender == "M" %}checked{% endif %}>
+              Masculino
+            </label>
+
+            <label class="flex items-center gap-2 text-sm text-zinc-200">
+              <input type="radio" name="gender" value="O"
+                     class="accent-white"
+                     {% if selected_gender == "O" %}checked{% endif %}>
+              Outro / Prefiro não dizer
+            </label>
+          </div>
+        </div>
+
+        <!-- IDADE -->
+        <div>
+          <div class="text-xs uppercase tracking-wide text-zinc-400 mb-2">Idade</div>
+
+          <select name="age"
+                  class="w-full rounded-2xl border border-zinc-800 bg-zinc-950/40 px-4 py-3 text-sm outline-none
+                         focus:ring-2 focus:ring-zinc-600 focus:border-zinc-700">
+            <option value="" {% if not selected_age %}selected{% endif %}>Todas</option>
+            <option value="lt18" {% if selected_age == "lt18" %}selected{% endif %}>Menos de 18</option>
+            <option value="18_29" {% if selected_age == "18_29" %}selected{% endif %}>18 – 29</option>
+            <option value="30_39" {% if selected_age == "30_39" %}selected{% endif %}>30 – 39</option>
+            <option value="40_49" {% if selected_age == "40_49" %}selected{% endif %}>40 – 49</option>
+            <option value="50_mais" {% if selected_age == "50_mais" %}selected{% endif %}>50+</option>
+          </select>
+
+          <p class="text-xs text-zinc-500 mt-2">
+            (Se sua base ainda não tem gênero/idade, a lista continua funcionando só com busca.)
+          </p>
+        </div>
+
+        <button type="submit"
+                class="w-full rounded-2xl border border-zinc-700 bg-zinc-900/40 px-4 py-3 hover:bg-zinc-900/70 transition">
+          Aplicar filtros
+        </button>
+      </form>
+    </div>
+  </aside>
+
+  <!-- MOBILE FILTERS (drawer simples) -->
+  <div id="filtersDrawer" class="md:hidden hidden fixed inset-0 z-50">
+    <div class="absolute inset-0 bg-black/60"></div>
+    <div class="absolute right-0 top-0 h-full w-[88%] max-w-sm bg-zinc-950 border-l border-zinc-800 p-5 overflow-auto">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-semibold">Filtros</h2>
+        <button id="filtersClose" class="rounded-xl border border-zinc-700 px-3 py-2 hover:bg-zinc-900/70">✕</button>
+      </div>
+
+      <form method="get" class="space-y-5">
+        <input type="hidden" name="q" value="{{ q|default:'' }}">
+
+        <div>
+          <div class="text-xs uppercase tracking-wide text-zinc-400 mb-2">Gênero</div>
+          <div class="grid gap-2">
+            <label class="flex items-center gap-2 text-sm text-zinc-200">
+              <input type="radio" name="gender" value="" class="accent-white"
+                     {% if not selected_gender %}checked{% endif %}>
+              Todos
+            </label>
+            <label class="flex items-center gap-2 text-sm text-zinc-200">
+              <input type="radio" name="gender" value="F" class="accent-white"
+                     {% if selected_gender == "F" %}checked{% endif %}>
+              Feminino
+            </label>
+            <label class="flex items-center gap-2 text-sm text-zinc-200">
+              <input type="radio" name="gender" value="M" class="accent-white"
+                     {% if selected_gender == "M" %}checked{% endif %}>
+              Masculino
+            </label>
+            <label class="flex items-center gap-2 text-sm text-zinc-200">
+              <input type="radio" name="gender" value="O" class="accent-white"
+                     {% if selected_gender == "O" %}checked{% endif %}>
+              Outro / Prefiro não dizer
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-xs uppercase tracking-wide text-zinc-400 mb-2">Idade</div>
+          <select name="age"
+                  class="w-full rounded-2xl border border-zinc-800 bg-zinc-950/40 px-4 py-3 text-sm outline-none">
+            <option value="" {% if not selected_age %}selected{% endif %}>Todas</option>
+            <option value="lt18" {% if selected_age == "lt18" %}selected{% endif %}>Menos de 18</option>
+            <option value="18_29" {% if selected_age == "18_29" %}selected{% endif %}>18 – 29</option>
+            <option value="30_39" {% if selected_age == "30_39" %}selected{% endif %}>30 – 39</option>
+            <option value="40_49" {% if selected_age == "40_49" %}selected{% endif %}>40 – 49</option>
+            <option value="50_mais" {% if selected_age == "50_mais" %}selected{% endif %}>50+</option>
+          </select>
+        </div>
+
+        <button type="submit"
+                class="w-full rounded-2xl bg-white text-zinc-900 font-medium px-4 py-3 hover:opacity-90 transition">
+          Aplicar
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- CARDS -->
+  <section>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {% for m in members %}
+        <a href="{% url 'member_detail' m.pk %}"
+           class="group rounded-[28px] border border-zinc-800 bg-zinc-950/40 overflow-hidden
+                  hover:bg-zinc-900/60 transition shadow-sm">
+
+          <!-- foto grande -->
+          <div class="relative">
+            <div class="aspect-[4/3] bg-zinc-900">
+              {% if m.photo %}
+                <img src="{{ m.photo.url }}" alt="{{ m.name }}"
+                     class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300">
+              {% else %}
+                <div class="w-full h-full flex items-center justify-center text-zinc-500 text-sm">
+                  Sem foto
+                </div>
+              {% endif %}
+            </div>
+
+            <!-- chip capturas -->
+            <div class="absolute top-3 left-3">
+              <div class="rounded-full bg-black/50 backdrop-blur px-3 py-1 text-xs text-zinc-100 border border-white/10">
+                🎣 {{ m.catches_count }} capturas
+              </div>
+            </div>
+          </div>
+
+          <!-- infos -->
+          <div class="p-5">
+            <div class="flex items-center gap-2">
+              <div class="text-lg font-semibold tracking-tight truncate">
+                {{ m.nickname }}
+              </div>
+              {% if m.nickname %}
+                <span class="text-xs text-zinc-300 bg-zinc-800/60 border border-zinc-700 rounded-full px-2 py-1">
+                  {{ m.name }}
+                </span>
+              {% endif %}
+            </div>
+
+            <div class="mt-2 text-sm text-zinc-400 line-clamp-2">
+              {% if m.bio %}
+                {{ m.bio }}
+              {% else %}
+                Sem história cadastrada.
+              {% endif %}
+            </div>
+
+            <!-- footer do card -->
+            <div class="mt-4 flex items-center justify-between text-xs text-zinc-500">
+              <span>
+                {% if m.age %}
+                  🎂 {{ m.age }} anos
+                {% else %}
+                  🎂 —
+                {% endif %}
+              </span>
+              <span class="text-zinc-400 group-hover:text-white transition">Ver perfil →</span>
+            </div>
+          </div>
+        </a>
+      {% empty %}
+        <div class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 text-zinc-400">
+          Nenhum membro cadastrado ainda.
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+</div>
+
+<script>
+  // drawer mobile filtros
+  (function () {
+    const btn = document.getElementById("filtersBtn");
+    const drawer = document.getElementById("filtersDrawer");
+    const close = document.getElementById("filtersClose");
+    if (!btn || !drawer || !close) return;
+
+    btn.addEventListener("click", () => drawer.classList.remove("hidden"));
+    close.addEventListener("click", () => drawer.classList.add("hidden"));
+    drawer.addEventListener("click", (e) => {
+      if (e.target === drawer) drawer.classList.add("hidden");
+    });
+  })();
+</script>
+
+{% endblock %}

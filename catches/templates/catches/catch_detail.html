@@ -1,0 +1,112 @@
+{% extends "core/_base.html" %}
+{% block title %}Captura • {{ catch.species.name }}{% endblock %}
+
+{% block content %}
+
+<!-- HEADER -->
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-2xl font-semibold">Detalhes da captura</h1>
+    <p class="text-zinc-400 mt-1">
+      {{ catch.species.name }} • {{ catch.caught_at|date:"d/m/Y H:i" }}
+    </p>
+  </div>
+
+  <a href="{% url 'group' %}"
+     class="rounded-xl border border-zinc-700 px-4 py-2 hover:bg-zinc-900/60 transition">
+    Voltar
+  </a>
+</div>
+
+<!-- FOTO EM DESTAQUE -->
+<section class="mb-8">
+  <div class="rounded-3xl border border-zinc-800 bg-zinc-900/40 overflow-hidden">
+    {% if catch.photo %}
+      <div class="relative w-full aspect-[16/9]">
+        <img
+          src="{{ catch.photo.url }}"
+          alt="Foto da captura"
+          class="absolute inset-0 w-full h-full object-cover"
+        >
+      </div>
+    {% else %}
+      <div class="aspect-[16/9] flex items-center justify-center text-zinc-500">
+        Sem foto
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- PERFIL + DADOS -->
+<section class="grid gap-6 lg:grid-cols-3">
+
+  <!-- PERFIL DO PESCADOR -->
+  <aside class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5">
+    <div class="flex items-center gap-4">
+      <div class="h-14 w-14 rounded-full bg-zinc-800 overflow-hidden ring-1 ring-zinc-700">
+        {% if catch.member.photo %}
+          <img src="{{ catch.member.photo.url }}" class="h-full w-full object-cover" alt="avatar">
+        {% endif %}
+      </div>
+
+      <div class="min-w-0">
+        <div class="font-medium truncate">{{ catch.member.name }}</div>
+        <div class="text-sm text-zinc-400 truncate">
+          {% if catch.member.nickname %}{{ catch.member.nickname }}{% else %}Membro{% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4 text-sm text-zinc-400">
+      Captura registrada em<br>
+      <span class="text-zinc-200 font-medium">
+        {{ catch.created_at|date:"d/m/Y H:i" }}
+      </span>
+    </div>
+  </aside>
+
+  <!-- DADOS DA CAPTURA -->
+  <div class="lg:col-span-2 grid gap-4 sm:grid-cols-2 text-sm">
+
+    <div class="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
+      <div class="text-zinc-400">Espécie</div>
+      <div class="mt-1 font-semibold">{{ catch.species.name }}</div>
+    </div>
+
+    <div class="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
+      <div class="text-zinc-400">Data / Hora</div>
+      <div class="mt-1 font-semibold">
+        {{ catch.caught_at|date:"d/m/Y H:i" }}
+      </div>
+    </div>
+
+    <div class="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
+      <div class="text-zinc-400">Tamanho</div>
+      <div class="mt-1 font-semibold">{{ catch.length_cm }} cm</div>
+    </div>
+
+    <div class="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
+      <div class="text-zinc-400">Peso</div>
+      <div class="mt-1 font-semibold">{{ catch.weight_kg }} kg</div>
+    </div>
+
+    <div class="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4 sm:col-span-2">
+      <div class="text-zinc-400">Local</div>
+      <div class="mt-1 font-semibold">{{ catch.location }}</div>
+    </div>
+
+    <div class="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4 sm:col-span-2">
+      <div class="text-zinc-400">Isca</div>
+      <div class="mt-1 font-semibold">
+        {% if catch.bait %}
+          {{ catch.bait }}
+        {% else %}
+          <span class="text-zinc-500">—</span>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

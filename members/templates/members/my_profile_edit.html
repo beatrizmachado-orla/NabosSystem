@@ -1,0 +1,193 @@
+{% extends "core/_base.html" %}
+{% block title %}Editar perfil{% endblock %}
+{% block content %}
+
+<div class="mx-auto max-w-4xl">
+  <div class="mb-6">
+    <h1 class="text-2xl font-semibold">Editar perfil</h1>
+    <p class="text-zinc-400 text-sm">Atualize sua foto e suas informações.</p>
+  </div>
+
+  <form method="post" enctype="multipart/form-data"
+        class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div class="grid gap-6 md:grid-cols-3">
+      <!-- COLUNA FOTO -->
+      <section class="md:col-span-1">
+        <div class="rounded-2xl border border-zinc-800 bg-zinc-950/40 p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-medium">Foto</h2>
+            <span class="text-xs text-zinc-500">Perfil</span>
+          </div>
+
+          <div class="flex flex-col items-center text-center">
+            <!-- Avatar -->
+            <div class="relative">
+              <div class="h-28 w-28 rounded-full overflow-hidden bg-zinc-800 ring-1 ring-zinc-700">
+                {% if form.instance.photo %}
+                  <img id="photoPreview" src="{{ form.instance.photo.url }}"
+                       class="h-full w-full object-cover" alt="Foto atual">
+                {% else %}
+                  <div id="photoPreview" class="h-full w-full flex items-center justify-center text-zinc-400 text-sm">
+                    Sem foto
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- Badge -->
+              <div class="absolute -bottom-2 left-1/2 -translate-x-1/2">
+                <span class="text-[11px] px-2 py-1 rounded-full bg-zinc-950 border border-zinc-800 text-zinc-300">
+                  avatar
+                </span>
+              </div>
+            </div>
+
+            <div class="mt-6 w-full space-y-2">
+              <!-- Input file (escondido) -->
+              <div class="hidden">
+                {{ form.photo }}
+              </div>
+
+              <label for="{{ form.photo.id_for_label }}"
+                     class="block w-full cursor-pointer rounded-xl bg-white text-zinc-900 font-medium px-4 py-2 hover:opacity-90">
+                Trocar foto
+              </label>
+
+              {% if form.instance.photo %}
+                <!-- Clear checkbox (escondido) -->
+                <div class="hidden">
+                  {{ form.photo.clear }}
+                </div>
+
+                <button type="button"
+                        id="removePhotoBtn"
+                        class="w-full rounded-xl border border-red-500/40 text-red-200 px-4 py-2 hover:bg-red-500/10">
+                  Remover foto
+                </button>
+
+                <p class="text-xs text-zinc-500">
+                  Clique em “Remover foto” para excluir a foto atual.
+                </p>
+              {% else %}
+                <p class="text-xs text-zinc-500">
+                  Dica: use uma imagem quadrada ou retrato.
+                </p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- COLUNA CAMPOS -->
+      <section class="md:col-span-2">
+        <div class="grid gap-4">
+          <div>
+            <label class="text-sm text-zinc-300">Nome</label>
+            {{ form.name }}
+            {% if form.name.errors %}<div class="text-red-400 text-sm mt-1">{{ form.name.errors }}</div>{% endif %}
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label class="text-sm text-zinc-300">Idade</label>
+              {{ form.age }}
+              {% if form.age.errors %}<div class="text-red-400 text-sm mt-1">{{ form.age.errors }}</div>{% endif %}
+            </div>
+
+            <div>
+              <label class="text-sm text-zinc-300">Apelido</label>
+              {{ form.nickname }}
+              {% if form.nickname.errors %}<div class="text-red-400 text-sm mt-1">{{ form.nickname.errors }}</div>{% endif %}
+            </div>
+          </div>
+
+          <div>
+            <label class="text-sm text-zinc-300">História</label>
+            {{ form.bio }}
+            {% if form.bio.errors %}<div class="text-red-400 text-sm mt-1">{{ form.bio.errors }}</div>{% endif %}
+          </div>
+
+          <div class="flex gap-2 pt-2">
+            <button class="rounded-xl bg-white text-zinc-900 font-medium px-5 py-2 hover:opacity-90">
+              Salvar
+            </button>
+            <a href="{% url 'my_profile' %}"
+               class="rounded-xl border border-zinc-700 px-5 py-2 hover:bg-zinc-900/60">
+              Cancelar
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </form>
+</div>
+
+<style>
+  /* inputs padrão bonitos sem depender de widget attrs */
+  input[type="text"], input[type="number"], textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 14px;
+    background: rgba(9,9,11,.6);
+    border: 1px solid #27272a;
+    color: #fafafa;
+    outline: none;
+  }
+  input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
+    border-color: #52525b;
+  }
+  textarea { min-height: 140px; }
+  /* esconde o checkbox do clear se aparecer */
+  input[type="checkbox"] { accent-color: white; }
+</style>
+
+<script>
+  // Preview ao selecionar uma nova foto
+  (function () {
+    const fileInput = document.getElementById("{{ form.photo.id_for_label }}");
+    const previewEl = document.getElementById("photoPreview");
+
+    if (fileInput) {
+      fileInput.addEventListener("change", (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        const url = URL.createObjectURL(file);
+
+        // Se já tem <img>, atualiza. Se não, cria.
+        if (previewEl && previewEl.tagName.toLowerCase() === "img") {
+          previewEl.src = url;
+        } else {
+          // Substitui o placeholder por img
+          const wrapper = previewEl?.parentElement;
+          if (wrapper) {
+            wrapper.innerHTML = `<img id="photoPreview" src="${url}" class="h-full w-full object-cover" alt="Preview">`;
+          }
+        }
+
+        // Se marcou "remover", desmarca
+        const clear = document.getElementById("{{ form.photo.clear.id_for_label|default:'' }}");
+        if (clear) clear.checked = false;
+      });
+    }
+
+    // Remover foto (marca o clear checkbox por baixo)
+    const removeBtn = document.getElementById("removePhotoBtn");
+    if (removeBtn) {
+      removeBtn.addEventListener("click", () => {
+        const clear = document.querySelector('input[name="photo-clear"]');
+        if (clear) {
+          clear.checked = true;
+          // feedback visual
+          removeBtn.textContent = "Foto marcada para remoção ✓";
+          removeBtn.disabled = true;
+          removeBtn.classList.add("opacity-60", "cursor-not-allowed");
+        }
+      });
+    }
+  })();
+</script>
+
+{% endblock %}

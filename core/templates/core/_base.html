@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Equipe Nabos{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="min-h-screen flex flex-col text-zinc-100 bg-site">
+  <!-- HEADER -->
+  <header class="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/40 backdrop-blur">
+    <div class="mx-auto max-w-6xl px-4">
+      <div class="h-16 flex items-center justify-between ali gap-3">
+        <!-- Brand -->
+        <a href="{% url 'home' %}" class="flex items-center gap-3 group">
+          <div class="h-10 w-10 rounded-xl flex items-center justify-center">
+            <span class="text-lg"><img src="{{ MEDIA_URL }}assets/logo/logo_nabos.png"></span>
+          </div>
+          <div class="leading-tight">
+            <div class="font-semibold tracking-tight group-hover:text-white">Equipe Nabos</div>
+          </div>
+        </a>
+
+        <!-- Desktop nav -->
+        <nav class="hidden md:flex items-center gap-1 text-sm">
+          <a href="{% url 'home' %}" class="navlink">Home</a>
+          <a href="{% url 'group' %}" class="navlink">Grupo</a>
+          <a href="{% url 'supporters' %}" class="navlink">Apoiadores</a>
+          <a href="{% url 'ranking' %}" class="navlink">Ranking</a>
+          <a href="{% url 'competition_species_list' %}" class="navlink">Espécies</a>
+          <a href="{% url 'spots_list' %}" class="navlink">Spots</a>
+
+        </nav>
+
+        <!-- Right actions -->
+        <div class="hidden md:flex items-center gap-2">
+          {% if user.is_authenticated %}
+          {% if user.is_staff %}
+            <a href="{% url 'admin:index' %}"
+              class="rounded-xl border border-emerald-700 bg-emerald-900/30 px-3 py-2
+                      hover:bg-emerald-900/60 transition text-sm flex items-center gap-2">
+              ⚙️ Admin
+            </a>
+          {% endif %}
+            <a href="{% url 'my_profile' %}" class="rounded-xl border border-zinc-700 bg-zinc-900/40 px-3 py-2 hover:bg-zinc-900/70 transition flex items-center gap-2">
+              <div class="h-7 w-7 rounded-full bg-zinc-800 overflow-hidden">
+                {% if user.member.photo %}
+                  <img src="{{ user.member.photo.url }}" class="h-full w-full object-cover" alt="avatar">
+                {% endif %}
+              </div>
+              <span class="text-sm">Meu perfil</span>
+            </a>
+
+            <form method="post" action="{% url 'logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="rounded-xl border border-zinc-700 px-3 py-2 hover:bg-zinc-900/70 transition">
+                Sair
+              </button>
+            </form>
+          {% else %}
+            <a href="{% url 'login' %}" class="rounded-xl border border-zinc-700 px-3 py-2 hover:bg-zinc-900/70 transition">
+              Entrar
+            </a>
+            <a href="{% url 'signup' %}" class="rounded-xl bg-white text-zinc-900 font-medium px-3 py-2 hover:opacity-90 transition">
+              Criar conta
+            </a>
+          {% endif %}
+        </div>
+
+<!-- Mobile button -->
+<button id="mobileBtn"
+        class="md:hidden rounded-xl border border-zinc-700 bg-zinc-900/40 px-3 py-2 hover:bg-zinc-900/70 transition"
+        aria-label="Abrir menu"
+        aria-controls="mobileDrawer"
+        aria-expanded="false">
+  ☰
+</button>
+
+<!-- Mobile Drawer -->
+<div id="mobileDrawer" class="fixed inset-0 z-50 hidden md:hidden">
+  <!-- overlay -->
+  <div id="mobileOverlay" class="absolute inset-0 bg-black/60 backdrop-blur-[2px]"></div>
+
+  <!-- panel -->
+  <aside class="absolute right-0 top-0 h-full w-[88%] max-w-sm border-l border-zinc-800 bg-zinc-950/95 p-4 overflow-auto">
+    <div class="flex items-center justify-between">
+      <a href="{% url 'home' %}" class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-xl bg-zinc-900/50 border border-zinc-800 flex items-center justify-center overflow-hidden">
+          <img src="{{ MEDIA_URL }}assets/logo/logo_nabos.png" alt="Equipe Nabos" class="h-full w-full object-contain p-1">
+        </div>
+        <div class="leading-tight">
+          <div class="font-semibold">Equipe Nabos</div>
+          <div class="text-xs text-zinc-400">Menu</div>
+        </div>
+      </a>
+
+      <button id="mobileClose"
+              class="rounded-xl border border-zinc-700 bg-zinc-900/40 px-3 py-2 hover:bg-zinc-900/70 transition"
+              aria-label="Fechar menu">
+        ✕
+      </button>
+    </div>
+
+    {% if user.is_authenticated %}
+      <div class="mt-4 rounded-2xl border border-zinc-800 bg-zinc-900/30 p-3 flex items-center gap-3">
+        <div class="h-10 w-10 rounded-full bg-zinc-800 overflow-hidden shrink-0">
+          {% if user.member.photo %}
+            <img src="{{ user.member.photo.url }}" class="h-full w-full object-cover" alt="avatar">
+          {% endif %}
+        </div>
+        <div class="min-w-0">
+          <div class="text-sm font-semibold truncate">{{ user.member.name|default:user.username }}</div>
+          <div class="text-xs text-zinc-400 truncate">Conta ativa</div>
+        </div>
+      </div>
+    {% endif %}
+
+    <nav class="mt-4 grid gap-2">
+      <a href="{% url 'home' %}" class="moblink">🏠 Home</a>
+      <a href="{% url 'group' %}" class="moblink">👥 Grupo</a>
+      <a href="{% url 'ranking' %}" class="moblink">🏆 Ranking</a>
+      <a href="{% url 'supporters' %}" class="moblink">🤝 Apoiadores</a>
+      <a href="{% url 'competition_species_list' %}" class="moblink">🐟 Espécies</a>
+
+      <div class="h-px bg-zinc-800 my-2"></div>
+
+      {% if user.is_authenticated %}
+        {% if user.is_staff %}
+          <a href="{% url 'admin:index' %}"
+             class="moblink border-emerald-700 bg-emerald-900/20">
+            ⚙️ Admin
+          </a>
+        {% endif %}
+
+        <a href="{% url 'my_profile' %}" class="moblink">🙋 Meu perfil</a>
+
+        <form method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="w-full text-left moblink">
+            🚪 Sair
+          </button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}" class="moblink">🔑 Entrar</a>
+        <a href="{% url 'signup' %}" class="moblink font-medium bg-white text-zinc-900 border-white">
+          ✨ Criar conta
+        </a>
+      {% endif %}
+    </nav>
+
+    <div class="mt-6 text-xs text-zinc-500">
+      Dica: toque fora do painel para fechar.
+    </div>
+  </aside>
+</div>
+
+      </div>
+
+      <!-- Mobile menu -->
+      <div id="mobileMenu" class="md:hidden hidden pb-4">
+        <div class="grid gap-2 pt-2">
+          <a href="{% url 'home' %}" class="moblink">Home</a>
+          <a href="{% url 'group' %}" class="moblink">Grupo</a>
+          <a href="{% url 'supporters' %}" class="moblink">Apoiadores</a>
+          <a href="{% url 'ranking' %}" class="moblink">Ranking</a>
+
+          <div class="h-px bg-zinc-800 my-2"></div>
+
+          {% if user.is_authenticated %}
+            <a href="{% url 'my_profile' %}" class="moblink flex items-center gap-2">
+              <div class="h-7 w-7 rounded-full bg-zinc-800 overflow-hidden">
+                {% if user.member.photo %}
+                  <img src="{{ user.member.photo.url }}" class="h-full w-full object-cover" alt="avatar">
+                {% endif %}
+              </div>
+              Meu perfil
+            </a>
+            <form method="post" action="{% url 'logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="w-full text-left moblink">
+                Sair
+              </button>
+            </form>
+          {% else %}
+            <a href="{% url 'login' %}" class="moblink">Entrar</a>
+            <a href="{% url 'signup' %}" class="moblink font-medium bg-white text-zinc-900 border-white">
+              Criar conta
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-6xl px-4 py-10 flex-1">
+    {% block content %}{% endblock %}
+  </main>
+
+<footer class="border-t border-zinc-800 bg-zinc-950/70 backdrop-blur">
+  <div class="mx-auto max-w-6xl px-4 py-10">
+    
+    <div class="grid gap-8 md:grid-cols-3 items-start">
+      
+      <!-- Brand -->
+      <div class="space-y-3">
+        <div class="flex items-center gap-3">
+          <div class="h-60 w-60  flex items-center justify-center overflow-hidden">
+            <img src="{{ MEDIA_URL }}assets/logo/logo_nabos.png"
+                 alt="Equipe Nabos"
+                 class="h-full w-full object-contain p-1">
+          </div>
+        </div>
+      </div>
+
+      <!-- Links -->
+      <div>
+        <h4 class="text-sm font-semibold mt-12 text-white">Navegação</h4>
+        <ul class="space-y-2 text-sm">
+          <li>
+            <a href="{% url 'home' %}" class="hover:text-white transition">Home</a>
+          </li>
+          <li>
+            <a href="{% url 'group' %}" class="hover:text-white transition">Grupo</a>
+          </li>
+          <li>
+            <a href="{% url 'ranking' %}" class="hover:text-white transition">Ranking</a>
+          </li>
+          <li>
+            <a href="{% url 'supporters' %}" class="hover:text-white transition">Apoiadores</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Info -->
+      <div>
+        <h4 class="text-sm font-semibold mt-12 text-white">Plataforma</h4>
+        <ul class="space-y-2 text-sm text-zinc-200">
+          <li>Django · Tailwind CSS</li>
+          <li>Sistema interno da Equipe Nabos</li>
+          <li>Ranking com regras oficiais DKF</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="mt-8 pt-6 border-t border-zinc-800 flex flex-col md:flex-row gap-2 items-center justify-between text-xs text-zinc-200">
+      <span>© {% now "Y" %} Equipe Nabos. Todos os direitos reservados.</span>
+      <span>Feito com ❤️ por Beatriz Machado</span>
+    </div>
+
+  </div>
+</footer>
+
+
+  <style>
+    .bg-site {
+    position: relative;
+    min-height: 100vh;
+
+    background-image: url("/media/assets/bg.png");
+    background-repeat: repeat;
+    background-size: auto;
+    background-position: top left;
+    background-color: #09090b;
+    }
+
+    .bg-site::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.8),
+        rgba(0, 0, 0, 0.5),
+        rgba(0, 0, 0, 0)
+    );
+    }
+    .navlink{
+      padding: 10px 12px;
+      border-radius: 12px;
+      color: rgb(212 212 216);
+      transition: all .15s ease;
+    }
+    .navlink:hover{ background: rgba(24,24,27,.6); color: white; }
+    .moblink{
+      padding: 4px 12px;
+      border-radius: 14px;
+      color: rgb(212 212 216);
+      transition: all .15s ease;
+    }
+    .moblink:hover{ background: rgba(24,24,27,.8); color: white; }
+  </style>
+
+  <script>
+    // menu mobile toggle
+    (function () {
+      const btn = document.getElementById("mobileBtn");
+      const menu = document.getElementById("mobileMenu");
+      if (!btn || !menu) return;
+
+      btn.addEventListener("click", () => {
+        menu.classList.toggle("hidden");
+      });
+    })();
+  </script>
+</body>
+</html>

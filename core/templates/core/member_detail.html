@@ -1,0 +1,191 @@
+{% extends "core/_base.html" %}
+{% block title %}{{ member.name }} • Kayak Fishing{% endblock %}
+
+{% block content %}
+
+<!-- TOP / PROFILE HEADER -->
+<section class="w-[70vw] rounded-3xl border border-zinc-800 bg-zinc-950/50 overflow-hidden mb-8">
+  <!-- cover -->
+  <div class="relative">
+    <div class="h-40 md:h-52 bg-gradient-to-br from-zinc-900 via-zinc-950 to-black"></div>
+
+    <!-- avatar floating -->
+    <div class="absolute left-6 -bottom-10 flex items-end gap-4">
+      <div class="h-24 w-24 md:h-28 md:w-28 rounded-3xl bg-zinc-800 overflow-hidden border border-zinc-700 ring-4 ring-zinc-950">
+        {% if member.photo %}
+          <img src="{{ member.photo.url }}" class="h-full w-full object-cover" alt="{{ member.name }}">
+        {% else %}
+          <div class="h-full w-full flex items-center justify-center text-zinc-500 text-sm">Sem foto</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- action buttons -->
+    <div class="absolute right-6 bottom-4 flex gap-2">
+      {% if user.is_authenticated and user.member.id == member.id %}
+        <a href="{% url 'my_profile_edit' %}"
+           class="rounded-xl bg-white text-zinc-900 font-medium px-4 py-2 hover:opacity-90 transition">
+          Editar perfil
+        </a>
+        <a href="{% url 'catch_new' %}"
+           class="rounded-xl border border-zinc-700 bg-zinc-900/40 px-4 py-2 hover:bg-zinc-900/70 transition">
+          + Nova captura
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- body -->
+  <div class="pt-14 md:pt-16 px-6 pb-6">
+    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+      <div class="min-w-0">
+        <h1 class="text-2xl md:text-3xl font-semibold truncate">
+          {{ member.name }}
+          {% if member.nickname %}
+            <span class="text-zinc-400 font-normal">• {{ member.nickname }}</span>
+          {% endif %}
+        </h1>
+
+        <div class="mt-2 flex flex-wrap gap-2 text-sm text-zinc-300">
+          {% if member.age %}
+            <span class="rounded-full border border-zinc-800 bg-zinc-900/40 px-3 py-1">🎂 {{ member.age }} anos</span>
+          {% endif %}
+          {% if member.gender %}
+            <span class="rounded-full border border-zinc-800 bg-zinc-900/40 px-3 py-1">🧭 {{ member.get_gender_display }}</span>
+          {% endif %}
+        </div>
+
+        <div class="mt-4">
+          {% if member.bio %}
+            <p class="text-zinc-300 whitespace-pre-line leading-relaxed">{{ member.bio }}</p>
+          {% else %}
+            <p class="text-zinc-500 text-sm">Sem história cadastrada.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- stats -->
+      <div class="grid grid-cols-3 gap-3 md:w-[360px]">
+        <div class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-4 text-center">
+          <div class="text-2xl font-semibold">{{ catches|length }}</div>
+          <div class="text-xs text-zinc-400 mt-1">capturas</div>
+        </div>
+
+        <div class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-4 text-center">
+          <div class="text-2xl font-semibold">{{ total_species|default:"0" }}</div>
+          <div class="text-xs text-zinc-400 mt-1">espécies</div>
+        </div>
+
+        <div class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-4 text-center">
+          <div class="text-2xl font-semibold">{{ points|default:"0" }}</div>
+          <div class="text-xs text-zinc-400 mt-1">pontos</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- CAPTURES -->
+<section class="flex items-end justify-between mb-4">
+  <div>
+    <h2 class="text-xl font-semibold">Capturas</h2>
+    <p class="text-zinc-400 text-sm">Clique em uma captura para ver os detalhes.</p>
+  </div>
+
+  {% if user.is_authenticated and user.member.id == member.id %}
+    <a href="{% url 'catch_new' %}"
+       class="rounded-xl border border-zinc-700 bg-zinc-900/40 px-4 py-2 hover:bg-zinc-900/70 transition">
+      + Registrar
+    </a>
+  {% endif %}
+</section>
+
+{% if catches %}
+  <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    {% for c in catches %}
+      <article
+        class="group rounded-3xl border border-zinc-800 bg-zinc-950/40 overflow-hidden hover:bg-zinc-900/60 transition"
+      >
+        <!-- IMAGE -->
+        <div class="relative">
+          <a href="{% url 'catch_detail' c.id %}" class="block">
+            <div class="aspect-[4/3] bg-zinc-900 overflow-hidden">
+              {% if c.photo %}
+                <img
+                  src="{{ c.photo.url }}"
+                  alt="{{ c.species.name }}"
+                  class="w-full h-full object-cover transition-all duration-300 group-hover:scale-110 group-hover:brightness-110"
+                >
+              {% else %}
+                <div class="w-full h-full flex items-center justify-center text-zinc-500 text-sm">
+                  Sem foto
+                </div>
+              {% endif %}
+            </div>
+          </a>
+
+          <!-- BADGES -->
+          <div class="absolute top-3 left-3 flex gap-2">
+            <a
+              href="{% url 'species_detail' c.species.slug %}"
+              class="rounded-full bg-black/60 backdrop-blur px-3 py-1 text-xs text-zinc-100 border border-white/10 hover:bg-black/80 transition"
+            >
+              {{ c.species.name }}
+            </a>
+          </div>
+
+          <div class="absolute top-3 right-3">
+            <span class="rounded-full bg-black/60 backdrop-blur px-3 py-1 text-xs text-zinc-100 border border-white/10">
+              {{ c.caught_at|date:"d/m/Y" }}
+            </span>
+          </div>
+        </div>
+
+        <!-- META -->
+        <div class="p-5">
+          <div class="flex items-center justify-between gap-2">
+            <div class="font-semibold truncate">{{ c.location }}</div>
+            <div class="text-xs text-zinc-400 shrink-0">{{ c.caught_at|date:"H:i" }}</div>
+          </div>
+
+          <div class="mt-3 grid grid-cols-3 gap-2 text-xs">
+            <div class="rounded-xl border border-zinc-800 bg-zinc-900/40 p-2 text-center">
+              <div class="text-zinc-400">Peso</div>
+              <div class="font-semibold mt-0.5">{{ c.weight_kg }} kg</div>
+            </div>
+
+            <div class="rounded-xl border border-zinc-800 bg-zinc-900/40 p-2 text-center">
+              <div class="text-zinc-400">Tamanho</div>
+              <div class="font-semibold mt-0.5">{{ c.length_cm }} cm</div>
+            </div>
+
+            <div class="rounded-xl border border-zinc-800 bg-zinc-900/40 p-2 text-center">
+              <div class="text-zinc-400">Isca</div>
+              <div class="font-semibold mt-0.5 truncate">
+                {% if c.bait %}{{ c.bait }}{% else %}—{% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 flex items-center justify-between">
+            <a href="{% url 'catch_detail' c.id %}" class="text-xs text-zinc-400 hover:text-white transition">
+              Ver detalhes →
+            </a>
+
+            <span class="text-xs text-zinc-500">
+              {% if c.member %}por {{ c.member.name }}{% endif %}
+            </span>
+          </div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 text-zinc-400">
+    Ainda sem capturas registradas.
+  </div>
+{% endif %}
+
+
+{% endblock %}

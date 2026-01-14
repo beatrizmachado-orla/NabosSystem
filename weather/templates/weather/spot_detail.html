@@ -1,0 +1,232 @@
+{% extends "core/_base.html" %}
+{% block title %}{{ spot.name }} • Tempo{% endblock %}
+
+{% block content %}
+
+<!-- HEADER -->
+<div class="mb-8">
+  <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+
+    <!-- Left -->
+    <div class="min-w-[100vw]">
+      <div class="flex items-center gap-3 flex-wrap">
+        <h1 class="text-3xl font-semibold tracking-tight truncate">{{ spot.name }}</h1>
+
+        <!-- Badge geral (bom/ruim) -->
+        {% if is_good_for_fishing %}
+          <span class="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 px-3 py-1 text-xs font-semibold">
+            🟢 Condição boa
+          </span>
+        {% else %}
+          <span class="inline-flex items-center gap-2 rounded-full bg-red-500/10 text-red-300 border border-red-500/20 px-3 py-1 text-xs font-semibold">
+            🔴 Condição desfavorável
+          </span>
+        {% endif %}
+      </div>
+
+      <!-- meta -->
+      <p class="text-zinc-400 text-sm mt-1">
+        {% if spot.city %}{{ spot.city }}{% endif %}{% if spot.state %} • {{ spot.state }}{% endif %}
+        Lat: {{ spot.latitude }}, Log: {{ spot.longitude }}
+      </p>
+
+      <!-- Resumo em frase (mantendo sua construção) -->
+      <div class="mt-4 text-sm leading-relaxed text-zinc-200">
+        <span class="text-white font-semibold">Nesse momento em {{ spot.name }} o </span>
+
+        {% if current_hour.wave_height_m <= 0.7 %}
+          <span class="text-emerald-400 font-semibold">mar está calmo</span>
+        {% elif current_hour.wave_height_m <= 1.2 %}
+          <span class="text-yellow-400 font-semibold">mar está mexido</span>
+        {% else %}
+          <span class="text-red-400 font-semibold">Mar está pesado</span>
+        {% endif %}
+
+        <span class="text-white font-semibold"> com </span>
+
+        {% if current_hour.wind_speed_ms <= 4 %}
+          <span class="text-emerald-400 font-semibold">vento bom</span>
+        {% elif current_hour.wind_speed_ms <= 7 %}
+          <span class="text-yellow-400 font-semibold">vento moderado</span>
+        {% else %}
+          <span class="text-red-400 font-semibold">Vento forte</span>
+        {% endif %}
+
+        <span class="text-white font-semibold"> e a Maré está </span>
+
+        {% if sea_trend == "up" %}
+          <span class="text-emerald-400 font-semibold">subindo.</span>
+        {% elif sea_trend == "down" %}
+          <span class="text-blue-400 font-semibold">vazando.</span>
+        {% else %}
+          <span class="text-green-400 font-semibold">estável.</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% if current_hour %}
+
+<!-- Cards grandes -->
+<section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4">
+  <div class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-4">
+    <div class="text-xs text-zinc-400">Onda</div>
+    <div class="text-2xl font-semibold mt-1">
+      {{ current_hour.wave_height_m|default:"—" }} m
+    </div>
+  </div>
+
+  <div class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-4">
+    <div class="text-xs text-zinc-400">Período</div>
+    <div class="text-2xl font-semibold mt-1">
+      {{ current_hour.wave_period_s|default:"—" }} s
+    </div>
+  </div>
+
+  <div class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-4">
+    <div class="text-xs text-zinc-400">Vento</div>
+    <div class="text-2xl font-semibold mt-1">
+      {{ current_hour.wind_speed_ms|default:"—" }} m/s
+    </div>
+  </div>
+
+  <div class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-4">
+    <div class="text-xs text-zinc-400">Temp. da água</div>
+    <div class="text-2xl font-semibold mt-1">
+      {{ current_hour.water_temp_c|default:"—" }} °C
+    </div>
+  </div>
+</section>
+
+<!-- Cards de status -->
+<section class="grid gap-4 grid-cols-1 sm:grid-cols-3 mb-8">
+  <!-- Mar -->
+  <div class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-4">
+    <div class="text-xs text-zinc-400 mb-1">Mar</div>
+    <div class="font-semibold">
+      {% if current_hour.wave_height_m <= 0.7 %}
+        <span class="text-emerald-400">Calmo</span>
+      {% elif current_hour.wave_height_m <= 1.2 %}
+        <span class="text-yellow-400">Mexido</span>
+      {% else %}
+        <span class="text-red-400">Pesado</span>
+      {% endif %}
+    </div>
+    <div class="text-xs text-zinc-400 mt-1">
+      Onda: <span class="text-zinc-200">{{ current_hour.wave_height_m|default:"—" }} m</span>
+    </div>
+  </div>
+
+  <!-- Vento -->
+  <div class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-4">
+    <div class="text-xs text-zinc-400 mb-1">Vento</div>
+    <div class="font-semibold">
+      {% if current_hour.wind_speed_ms <= 4 %}
+        <span class="text-emerald-400">Bom</span>
+      {% elif current_hour.wind_speed_ms <= 7 %}
+        <span class="text-yellow-400">Moderado</span>
+      {% else %}
+        <span class="text-red-400">Forte</span>
+      {% endif %}
+    </div>
+    <div class="text-xs text-zinc-400 mt-1">
+      Vel.: <span class="text-zinc-200">{{ current_hour.wind_speed_ms|default:"—" }} m/s</span>
+    </div>
+  </div>
+
+  <!-- Maré -->
+  <div class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-4">
+    <div class="text-xs text-zinc-400 mb-1">Maré</div>
+    <div class="font-semibold">
+      {% if sea_trend == "up" %}
+        <span class="text-emerald-400">Subindo</span>
+      {% elif sea_trend == "down" %}
+        <span class="text-blue-400">Vazando</span>
+      {% else %}
+        <span class="text-green-400">Estável</span>
+      {% endif %}
+    </div>
+    <div class="text-xs text-zinc-400 mt-1">
+      Tendência: <span class="text-zinc-200">{{ sea_trend|default:"—" }}</span>
+    </div>
+  </div>
+</section>
+
+{% endif %}
+
+<!-- PREVISÃO HORÁRIA -->
+<section class="rounded-3xl border border-zinc-800 bg-zinc-900/30 overflow-hidden">
+  <div class="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
+    <h2 class="font-semibold">Previsão por hora</h2>
+    <span class="text-xs text-zinc-400">UTC</span>
+  </div>
+
+  <div class="divide-y divide-zinc-800">
+    {% for h in hours %}
+      <div class="grid grid-cols-2 sm:grid-cols-6 gap-4 px-6 py-4 text-sm items-center">
+
+        <!-- Hora -->
+        <div class="font-medium">
+          {{ h.time|date:"d/m H:i" }}
+        </div>
+
+        <!-- Onda -->
+        <div>
+          <div class="text-zinc-400 text-xs">Onda</div>
+          <div class="font-semibold">
+            {{ h.wave_height_m|default:"—" }} m
+          </div>
+        </div>
+
+        <!-- Período -->
+        <div>
+          <div class="text-zinc-400 text-xs">Período</div>
+          <div>
+            {{ h.wave_period_s|default:"—" }} s
+          </div>
+        </div>
+
+        <!-- Vento -->
+        <div>
+          <div class="text-zinc-400 text-xs">Vento</div>
+          <div>
+            {{ h.wind_speed_ms|default:"—" }} m/s
+          </div>
+        </div>
+
+        <!-- Direção -->
+        <div>
+          <div class="text-zinc-400 text-xs">Direção</div>
+          <div class="flex items-center gap-1">
+            <span class="inline-block transform"
+                  style="transform: rotate({{ h.wind_direction_deg|default:0 }}deg);">
+              ↑
+            </span>
+            <span class="text-xs">
+              {{ h.wind_direction_deg|default:"—" }}°
+            </span>
+          </div>
+        </div>
+
+        <!-- Água -->
+        <div>
+          <div class="text-zinc-400 text-xs">Água</div>
+          <div>
+            {{ h.water_temp_c|default:"—" }} °C
+          </div>
+        </div>
+
+      </div>
+    {% empty %}
+      <div class="px-6 py-10 text-zinc-400 text-center">
+        Ainda não há previsão salva para este spot.
+        <br>
+        Atualize pelo painel administrativo.
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}

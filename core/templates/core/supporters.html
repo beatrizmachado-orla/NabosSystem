@@ -1,0 +1,95 @@
+{% extends "core/_base.html" %}
+{% block title %}Apoiadores • Kayak Fishing{% endblock %}
+
+{% block content %}
+
+<!-- HEADER -->
+<section class="mb-8">
+  <div class="rounded-3xl border border-zinc-800 bg-zinc-950/60 p-6 md:p-8 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-black/70 via-black/30 to-transparent"></div>
+
+    <div class="relative flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-semibold">Apoiadores</h1>
+        <p class="text-zinc-200 text-sm mt-2 max-w-2xl">
+          Quem fortalece o rolê do caiaque. Marcas e pessoas que ajudam a comunidade a crescer.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <span class="text-xs text-zinc-200 rounded-full border border-zinc-800 px-3 py-1 bg-zinc-900/40">
+          Total: {{ supporters|length }}
+        </span>
+        <a href="{% url 'home' %}"
+           class="text-sm text-zinc-200 hover:text-white transition">
+          ← Voltar
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GRID (forçado pra não achatar) -->
+<section class="mx-auto max-w-6xl">
+  <div class="[display:grid] gap-4 sm:gap-5
+              [grid-template-columns:repeat(auto-fit,minmax(240px,1fr))]">
+
+    {% for s in supporters %}
+      {% if s.website %}
+        <a href="{{ s.website }}" target="_blank" rel="noopener"
+           class="group rounded-2xl border border-zinc-800 bg-white/80 p-5 hover:bg-zinc-900/70 transition">
+          <div class="flex items-start justify-between gap-4">
+            <div class="min-w-0">
+              <div class="text-sm text-zinc-800 group-hover:text-white transition">Apoiador</div>
+              <div class="mt-1 font-medium text-black truncate group-hover:text-white transition">
+                {{ s.name }}
+              </div>
+            </div>
+            <span class="text-xs text-black group-hover:text-zinc-300 transition">
+              Visitar →
+            </span>
+          </div>
+
+          <div class="mt-4 h-48 rounded-xl  flex items-center justify-center overflow-hidden">
+            {% if s.logo %}
+              <img src="{{ s.logo.url }}" class="h-48 max-w-[85%] object-contain" alt="{{ s.name }}">
+            {% else %}
+              <span class="text-zinc-800 text-sm">Sem logo</span>
+            {% endif %}
+          </div>
+
+          <div class="mt-4 text-xs text-black group-hover:text-white transition">
+            Obrigado por apoiar a comunidade 🎣
+          </div>
+        </a>
+      {% else %}
+        <div
+          class="rounded-2xl border border-zinc-800 bg-white/80 p-5 opacity-95">
+          <div class="text-sm text-zinc-800">Apoiador</div>
+          <div class="mt-1 font-medium text-black truncate">
+            {{ s.name }}
+          </div>
+
+          <div class="mt-4 h-48 rounded-xl flex items-center justify-center overflow-hidden">
+            {% if s.logo %}
+              <img src="{{ s.logo.url }}" class="h-48 max-w-[85%] object-contain" alt="{{ s.name }}">
+            {% else %}
+              <span class="text-zinc-200 text-sm">Sem logo</span>
+            {% endif %}
+          </div>
+
+          <div class="mt-4 text-xs text-black">
+            Site não informado
+          </div>
+        </div>
+      {% endif %}
+
+    {% empty %}
+      <div class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 text-zinc-200">
+        Nenhum apoiador cadastrado ainda.
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}

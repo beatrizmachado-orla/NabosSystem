@@ -1,0 +1,35 @@
+{% extends "core/_base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-md rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
+  <h1 class="text-2xl font-semibold mb-2">Entrar</h1>
+  <p class="text-zinc-400 text-sm mb-6">Acesse para ver seu perfil e registrar capturas.</p>
+
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div>
+      <label class="text-sm text-zinc-300">Usuário</label>
+      {{ form.username }}
+    </div>
+
+    <div>
+      <label class="text-sm text-zinc-300">Senha</label>
+      {{ form.password }}
+    </div>
+
+    <button class="w-full rounded-xl bg-white text-zinc-900 font-medium py-2 hover:opacity-90">
+      Entrar
+    </button>
+  </form>
+
+  <div class="mt-5 text-sm text-zinc-400">
+    Não tem conta? <a class="text-white underline" href="{% url 'signup' %}">Criar cadastro</a>
+  </div>
+</div>
+
+<style>
+  input{width:100%;padding:10px;border-radius:12px;background:#18181b;border:1px solid #27272a;color:#fafafa}
+</style>
+{% endblock %}

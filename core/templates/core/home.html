@@ -1,0 +1,443 @@
+{% extends "core/_base.html" %}
+{% block title %}Home • Kayak Fishing{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="relative overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-950/60 mb-10">
+  <div class="absolute inset-0 bg-gradient-to-br from-black/75 via-black/30 to-transparent"></div>
+
+  <div class="relative p-7 md:p-12 grid gap-8 md:grid-cols-2 items-center">
+    <div class="space-y-5">
+
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="inline-flex items-center gap-2 rounded-full bg-zinc-800/60 px-3 py-1 text-xs text-zinc-200 border border-zinc-700/60">
+          🎣 Grupo de pesca em caiaque
+        </span>
+        {% if user.is_authenticated %}
+          <span class="inline-flex items-center gap-2 rounded-full bg-emerald-900/20 px-3 py-1 text-xs text-emerald-200 border border-emerald-800/50">
+            ✅ Você está logado
+          </span>
+        {% else %}
+          <span class="inline-flex items-center gap-2 rounded-full bg-zinc-900/40 px-3 py-1 text-xs text-zinc-300 border border-zinc-800">
+            👋 Entre para registrar suas capturas
+          </span>
+        {% endif %}
+      </div>
+
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight">
+        Registrando histórias,<br class="hidden md:block">
+        capturas e desafios
+      </h1>
+
+      <p class="text-zinc-200/90 max-w-xl">
+        Um espaço feito pela galera do caiaque para registrar capturas, compartilhar histórias e montar um ranking com regras oficiais.
+      </p>
+
+      <div class="flex flex-wrap gap-3 pt-1">
+        {% if user.is_authenticated %}
+          <a href="{% url 'catch_new' %}"
+             class="px-5 py-3 rounded-xl bg-white text-zinc-900 font-semibold hover:opacity-90 transition">
+            + Nova captura
+          </a>
+          <a href="{% url 'my_profile' %}"
+             class="px-5 py-3 rounded-xl border border-zinc-700 hover:bg-zinc-900/60 transition">
+            Meu perfil
+          </a>
+        {% else %}
+          <a href="{% url 'signup' %}"
+             class="px-5 py-3 rounded-xl bg-white text-zinc-900 font-semibold hover:opacity-90 transition">
+            Criar conta
+          </a>
+          <a href="{% url 'login' %}"
+             class="px-5 py-3 rounded-xl border border-zinc-700 hover:bg-zinc-900/60 transition">
+            Entrar
+          </a>
+        {% endif %}
+
+        <a href="{% url 'competition_species_list' %}"
+           class="px-5 py-3 rounded-xl border border-zinc-700 hover:bg-zinc-900/60 transition">
+          Espécies da competição
+        </a>
+      </div>
+
+      <!-- QUICK STATS -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3">
+        <div class="rounded-2xl border border-zinc-800 bg-zinc-900/35 p-4">
+          <div class="text-xs text-zinc-400">Membros</div>
+          <div class="text-xl font-semibold">
+            {{ stats.members|default:"—" }}
+          </div>
+        </div>
+        <div class="rounded-2xl border border-zinc-800 bg-zinc-900/35 p-4">
+          <div class="text-xs text-zinc-400">Capturas</div>
+          <div class="text-xl font-semibold">
+            {{ stats.catches|default:"—" }}
+          </div>
+        </div>
+        <div class="rounded-2xl border border-zinc-800 bg-zinc-900/35 p-4">
+          <div class="text-xs text-zinc-400">Espécies</div>
+          <div class="text-xl font-semibold">
+            {{ stats.species|default:"—" }}
+          </div>
+        </div>
+        <div class="rounded-2xl border border-zinc-800 bg-zinc-900/35 p-4">
+          <div class="text-xs text-zinc-400">Apoiadores</div>
+          <div class="text-xl font-semibold">
+            {{ stats.supporters|default:"—" }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HERO IMAGE -->
+    <div class="relative">
+      <div class="rounded-3xl border border-zinc-800 bg-zinc-900/30 overflow-hidden">
+        <div class="aspect-video bg-zinc-900 overflow-hidden">
+          <img src="{{ MEDIA_URL }}assets/Hero.jpeg" alt="Equipe Nabos"
+               class="w-full h-full object-cover">
+        </div>
+
+        <!-- overlay meta -->
+        <div class="p-4 flex items-center justify-between gap-3">
+          <div class="text-sm text-zinc-300">
+            <div class="font-semibold text-white">Equipe Nabos</div>
+            <div class="text-zinc-400 text-xs">Registro + Ranking + Comunidade</div>
+          </div>
+
+          <a href="{% url 'ranking' %}"
+             class="text-xs rounded-full border border-zinc-700 bg-zinc-950/40 px-3 py-2 hover:bg-zinc-900/60 transition">
+            Ver ranking →
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- QUICK LINKS -->
+<section class="grid gap-4 md:grid-cols-4 mb-10">
+  <a href="{% url 'group' %}" class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5 hover:bg-zinc-900/65 transition">
+    <div class="text-lg font-semibold">👥 Grupo</div>
+    <div class="text-sm text-zinc-400 mt-2">Veja membros, perfis e histórias do time.</div>
+    <div class="text-xs text-zinc-500 mt-3">Acessar →</div>
+  </a>
+
+  <a href="{% url 'ranking' %}" class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5 hover:bg-zinc-900/65 transition">
+    <div class="text-lg font-semibold">🏆 Ranking</div>
+    <div class="text-sm text-zinc-400 mt-2">Acompanhe o pódio e os pontos por captura.</div>
+    <div class="text-xs text-zinc-500 mt-3">Acessar →</div>
+  </a>
+
+  <a href="{% url 'competition_species_list' %}" class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5 hover:bg-zinc-900/65 transition">
+    <div class="text-lg font-semibold">🐟 Espécies</div>
+    <div class="text-sm text-zinc-400 mt-2">Lista oficial + perfis com resumo e dicas.</div>
+    <div class="text-xs text-zinc-500 mt-3">Acessar →</div>
+  </a>
+
+  <a href="{% url 'supporters' %}" class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5 hover:bg-zinc-900/65 transition">
+    <div class="text-lg font-semibold">🤝 Apoiadores</div>
+    <div class="text-sm text-zinc-400 mt-2">Quem fortalece o rolê e ajuda o grupo.</div>
+    <div class="text-xs text-zinc-500 mt-3">Acessar →</div>
+  </a>
+</section>
+
+<!-- RECENT CATCHES FEED -->
+<section class="mb-10">
+  <div class="flex items-end justify-between gap-4 mb-4">
+    <div>
+      <h2 class="text-xl font-semibold">Capturas recentes</h2>
+      <p class="text-sm text-zinc-400">O que a galera registrou por último.</p>
+    </div>
+    <div class="flex gap-2">
+      {% if user.is_authenticated %}
+        <a href="{% url 'catch_new' %}" class="text-sm rounded-xl bg-white text-zinc-900 font-medium px-4 py-2 hover:opacity-90 transition">
+          + Nova captura
+        </a>
+      {% endif %}
+      <a href="{% url 'group' %}" class="text-sm rounded-xl border border-zinc-700 px-4 py-2 hover:bg-zinc-900/60 transition">
+        Ver membros
+      </a>
+    </div>
+  </div>
+
+  {% if recent_catches %}
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {% for c in recent_catches %}
+        <a href="{% url 'catch_detail' c.id %}"
+           class="group rounded-3xl border border-zinc-800 bg-zinc-950/40 overflow-hidden hover:bg-zinc-900/60 transition">
+          <div class="relative">
+            <div class="aspect-[4/3] bg-zinc-900 overflow-hidden">
+              {% if c.photo %}
+                <img src="{{ c.photo.url }}"
+                     alt="{{ c.species.name }}"
+                     class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.06]">
+              {% else %}
+                <div class="w-full h-full flex items-center justify-center text-zinc-500 text-sm">
+                  Sem foto
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="absolute top-3 left-3 flex gap-2">
+              <span class="rounded-full bg-black/60 backdrop-blur px-3 py-1 text-xs text-zinc-100 border border-white/10">
+                {{ c.species.name }}
+              </span>
+            </div>
+
+            <div class="absolute top-3 right-3">
+              <span class="rounded-full bg-black/60 backdrop-blur px-3 py-1 text-xs text-zinc-100 border border-white/10">
+                {{ c.caught_at|date:"d/m/Y" }}
+              </span>
+            </div>
+          </div>
+
+          <div class="p-5">
+            <div class="flex items-center justify-between gap-2">
+              <div class="font-semibold truncate">{{ c.location }}</div>
+              <div class="text-xs text-zinc-500 shrink-0">{{ c.caught_at|date:"H:i" }}</div>
+            </div>
+
+            <div class="mt-2 grid grid-cols-3 gap-2 text-xs">
+              <div class="rounded-xl border border-zinc-800 bg-zinc-900/40 p-2 text-center">
+                <div class="text-zinc-400">Peso</div>
+                <div class="font-semibold mt-0.5">{{ c.weight_kg }} kg</div>
+              </div>
+              <div class="rounded-xl border border-zinc-800 bg-zinc-900/40 p-2 text-center">
+                <div class="text-zinc-400">Tamanho</div>
+                <div class="font-semibold mt-0.5">{{ c.length_cm }} cm</div>
+              </div>
+              <div class="rounded-xl border border-zinc-800 bg-zinc-900/40 p-2 text-center">
+                <div class="text-zinc-400">Isca</div>
+                <div class="font-semibold mt-0.5 truncate">
+                  {% if c.bait %}{{ c.bait }}{% else %}—{% endif %}
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 text-xs text-zinc-500 flex items-center justify-between">
+              <span class="truncate">
+                por <span class="text-zinc-300">{{ c.member.name }}</span>
+              </span>
+              <span class="text-zinc-400 group-hover:text-white transition">Ver →</span>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 text-zinc-400">
+      Ainda sem capturas registradas.
+    </div>
+  {% endif %}
+</section>
+
+<!-- RANKING PREVIEW -->
+<section class="mb-10">
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <h2 class="text-xl font-semibold">Ranking em destaque</h2>
+      <p class="text-sm text-zinc-400">Top 3 atual (pódio rápido).</p>
+    </div>
+    <a href="{% url 'ranking' %}" class="text-sm text-zinc-400 hover:text-white">
+      Ver completo →
+    </a>
+  </div>
+
+  {% if podium and podium|length > 0 %}
+    <div class="grid gap-4 md:grid-cols-3">
+      {% for row in podium %}
+        <a href="{% url 'member_detail' row.member.id %}" class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5 hover:bg-zinc-900/65 transition">
+          <div class="flex items-center gap-3">
+            <div class="h-14 w-14 rounded-full bg-zinc-800 overflow-hidden ring-1 ring-zinc-700">
+              {% if row.member.photo %}
+                <img src="{{ row.member.photo.url }}" class="h-full w-full object-cover" alt="{{ row.member.name }}">
+              {% endif %}
+            </div>
+            <div class="min-w-0">
+              <div class="font-semibold truncate">{{ forloop.counter }}º • {{ row.member.name }}</div>
+              <div class="text-sm text-zinc-400 truncate">
+                {{ row.points|floatformat:0 }} pts
+              </div>
+              <div class="text-xs text-zinc-500 mt-1">Abrir perfil →</div>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 text-zinc-400 text-sm">
+      Ainda não existem capturas válidas no ranking (ou não há membros cadastrados).
+    </div>
+  {% endif %}
+</section>
+
+<!-- SPECIES CTA -->
+<section class="rounded-3xl border border-zinc-800 bg-zinc-950/60 p-7 md:p-10 mb-10 relative overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-br from-zinc-900/60 via-transparent to-transparent"></div>
+  <div class="relative flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+    <div>
+      <h2 class="text-2xl font-semibold">Espécies aceitas na competição</h2>
+      <p class="text-zinc-300 mt-2 max-w-2xl">
+        Acesse a lista oficial e abra o perfil de cada peixe com resumo, locais/habitat e iscas recomendadas.
+      </p>
+    </div>
+    <div class="flex gap-3">
+      <a href="{% url 'competition_species_list' %}"
+         class="rounded-xl bg-white text-zinc-900 font-medium px-5 py-3 hover:opacity-90 transition">
+        Ver espécies
+      </a>
+      <a href="{% url 'ranking' %}"
+         class="rounded-xl border border-zinc-700 px-5 py-3 hover:bg-zinc-900/60 transition">
+        Ver ranking
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- SUPPORTERS FULL WIDTH -->
+<section class="relative left-1/2 right-1/2 -mx-[50vw] w-screen bg-white border-y border-zinc-200">
+  <div class="mx-auto max-w-6xl px-4 py-12">
+
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl text-black font-semibold">Apoiadores</h2>
+      <a href="{% url 'supporters' %}" class="text-sm text-zinc-600 hover:text-black transition">
+        Ver todos →
+      </a>
+    </div>
+
+    {% if supporters %}
+      <div class="flex flex-wrap gap-8 items-center justify-center">
+        {% for s in supporters %}
+          {% if s.website %}
+            <a href="{{ s.website }}" target="_blank" rel="noopener"
+               class="h-32 w-32 rounded-2xl bg-white flex items-center justify-center overflow-hidden hover:scale-105 transition"
+               title="{{ s.name }}">
+              {% if s.logo %}
+                <img src="{{ s.logo.url }}"
+                     class="h-full w-full object-contain p-4"
+                     alt="{{ s.name }}">
+              {% else %}
+                <span class="text-zinc-500 text-sm">{{ s.name }}</span>
+              {% endif %}
+            </a>
+          {% else %}
+            <div class="h-32 w-32 rounded-2xl bg-white flex items-center justify-center overflow-hidden"
+                 title="{{ s.name }}">
+              {% if s.logo %}
+                <img src="{{ s.logo.url }}"
+                     class="h-full w-full object-contain p-4"
+                     alt="{{ s.name }}">
+              {% else %}
+                <span class="text-zinc-500 text-sm">{{ s.name }}</span>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="rounded-xl border border-zinc-300 bg-zinc-100 p-6 text-zinc-500 text-sm">
+        Nenhum apoiador cadastrado ainda.
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+
+<!-- Peixinho flutuando (mantido como você pediu) -->
+<div id="floating-fish" aria-hidden="true">
+  <button id="floating-fish-btn" type="button" title="Clique para esconder">
+    <img src="{{ MEDIA_URL }}assets/Romario.gif" alt="">
+  </button>
+</div>
+<style>
+  /* Container não bloqueia cliques no site */
+  #floating-fish{
+    position: fixed;
+    left: 0;
+    top: 18%;
+    width: 100vw;
+    height: 0; /* não cria área grande clicável */
+    z-index: 60;
+    pointer-events: none; /* deixa passar clique/scroll pro site */
+  }
+
+  /* Só o botão é clicável */
+  #floating-fish-btn{
+    pointer-events: auto;
+    position: absolute;
+    left: -120px; /* começa fora da tela */
+    top: 30vh;
+
+    border: 0;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+
+    opacity: .95;
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,.35));
+    animation: fish-swim 32s linear infinite, fish-bob 2.8s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  #floating-fish-btn img{
+    width: 90px;      /* ajuste o tamanho */
+    height: auto;
+    display: block;
+    transform: scaleX(-1);
+    transition: fadein-out 1s ease-in-out infinite;
+  }
+
+  @keyframes fadein-out {
+    0%  {opacity: 0;}
+    10%  {opacity: 0.35;}
+    50%  {opacity: 1;} /* vira o peixe */
+    90%  {opacity: 0.35;}
+    100% {opacity: 0;}
+  }
+
+  /* Nado lateral */
+  @keyframes fish-swim{
+    0%   { transform: translateX(0) scaleX(1); }
+    49%  { transform: translateX(calc(100vw + 120px)) scaleX(1); }
+    50%  { transform: translateX(calc(100vw + 120px)) scaleX(-1); } /* vira o peixe */
+    99%  { transform: translateX(0) scaleX(-1); }
+    100% { transform: translateX(0) scaleX(1); }
+  }
+
+  /* Flutuação leve */
+  @keyframes fish-bob{
+    0%,100% { margin-top: 0; }
+    50%     { margin-top: 15px; rotate: -8deg; }
+  }
+
+  /* respeita usuários que preferem reduzir animação */
+  @media (prefers-reduced-motion: reduce){
+    #floating-fish-btn{ animation: none; }
+  }
+</style>
+
+<script>
+  (function () {
+    const btn = document.getElementById("floating-fish-btn");
+    const wrap = document.getElementById("floating-fish");
+    const img  = btn?.querySelector("img");
+    if (!btn || !wrap || !img) return;
+
+    btn.addEventListener("click", function () {
+      // troca o gif para "explosion/point"
+      img.src = "{{ MEDIA_URL }}assets/explosion.gif";
+
+      // congela o movimento (pra animação de sumiço ficar consistente)
+      btn.style.animationPlayState = "paused";
+
+      // depois do fade, some de vez
+      setTimeout(() => {
+        wrap.style.display = "none";
+      }, 2000);
+    });
+  })();
+</script>
+
+{% endblock %}

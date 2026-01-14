@@ -1,0 +1,169 @@
+{% extends "core/_base.html" %}
+{% block title %}Nova captura{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-4xl">
+  <div class="mb-6">
+    <h1 class="text-2xl font-semibold">Nova captura</h1>
+    <p class="text-zinc-400 text-sm">Registre a captura — ela ficará vinculada automaticamente ao seu perfil.</p>
+  </div>
+
+  <form method="post" enctype="multipart/form-data"
+        class="rounded-2xl border border-zinc-800 bg-zinc-900/30 p-6">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div class="grid gap-6 md:grid-cols-3">
+      <!-- COLUNA FOTO -->
+      <section class="md:col-span-1">
+        <div class="rounded-2xl border border-zinc-800 bg-zinc-950/40 p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-medium">Foto do peixe</h2>
+            <span class="text-xs text-zinc-500">Opcional</span>
+          </div>
+
+          <!-- Preview -->
+          <div class="rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900/30">
+            <div class="aspect-square flex items-center justify-center">
+              <div id="imgPlaceholder" class="text-zinc-400 text-sm text-center px-6">
+                Sem foto selecionada
+              </div>
+              <img id="imgPreview" class="hidden h-full w-full object-cover" alt="Preview da foto">
+            </div>
+          </div>
+
+          <div class="mt-4 space-y-2">
+            <!-- Input file escondido -->
+            <div class="hidden">
+              {{ form.photo }}
+            </div>
+
+            <label for="{{ form.photo.id_for_label }}"
+                   class="block w-full cursor-pointer rounded-xl bg-white text-zinc-900 font-medium px-4 py-2 hover:opacity-90 text-center">
+              Escolher foto
+            </label>
+
+            <button type="button" id="clearPhotoBtn"
+                    class="w-full rounded-xl border border-red-500/40 text-red-200 px-4 py-2 hover:bg-red-500/10">
+              Remover foto
+            </button>
+
+            <p class="text-xs text-zinc-500">
+              Dica: fotos quadradas ficam melhores no ranking e na lista.
+            </p>
+          </div>
+
+          {% if form.photo.errors %}
+            <div class="text-red-400 text-sm mt-2">{{ form.photo.errors }}</div>
+          {% endif %}
+        </div>
+      </section>
+
+      <!-- COLUNA CAMPOS -->
+      <section class="md:col-span-2">
+        <div class="grid gap-4">
+          <!-- Espécie -->
+          <div>
+            <label class="text-sm text-zinc-300">Espécie</label>
+            {{ form.species }}
+            {% if form.species.errors %}<div class="text-red-400 text-sm mt-1">{{ form.species.errors }}</div>{% endif %}
+          </div>
+
+          <!-- Tamanho / Peso -->
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label class="text-sm text-zinc-300">Tamanho (cm)</label>
+              {{ form.length_cm }}
+              {% if form.length_cm.errors %}<div class="text-red-400 text-sm mt-1">{{ form.length_cm.errors }}</div>{% endif %}
+            </div>
+            <div>
+              <label class="text-sm text-zinc-300">Peso (kg)</label>
+              {{ form.weight_kg }}
+              {% if form.weight_kg.errors %}<div class="text-red-400 text-sm mt-1">{{ form.weight_kg.errors }}</div>{% endif %}
+            </div>
+          </div>
+
+          <!-- Local -->
+          <div>
+            <label class="text-sm text-zinc-300">Local</label>
+            {{ form.location }}
+            {% if form.location.errors %}<div class="text-red-400 text-sm mt-1">{{ form.location.errors }}</div>{% endif %}
+          </div>
+
+          <!-- Horário / Isca -->
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label class="text-sm text-zinc-300">Horário</label>
+              {{ form.caught_at }}
+              <div class="text-xs text-zinc-500 mt-1">Ex.: 07/01/2026 06:30</div>
+              {% if form.caught_at.errors %}<div class="text-red-400 text-sm mt-1">{{ form.caught_at.errors }}</div>{% endif %}
+            </div>
+            <div>
+              <label class="text-sm text-zinc-300">Isca</label>
+              {{ form.bait }}
+              {% if form.bait.errors %}<div class="text-red-400 text-sm mt-1">{{ form.bait.errors }}</div>{% endif %}
+            </div>
+          </div>
+
+          <!-- Ações -->
+          <div class="flex gap-2 pt-2">
+            <button class="rounded-xl bg-white text-zinc-900 font-medium px-5 py-2 hover:opacity-90">
+              Salvar captura
+            </button>
+            <a href="{% url 'my_profile' %}"
+               class="rounded-xl border border-zinc-700 px-5 py-2 hover:bg-zinc-900/60">
+              Cancelar
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </form>
+</div>
+
+<style>
+  input[type="text"], input[type="number"], input[type="datetime-local"], textarea, select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 14px;
+    background: rgba(9,9,11,.6);
+    border: 1px solid #27272a;
+    color: #fafafa;
+    outline: none;
+  }
+  input:focus, textarea:focus, select:focus { border-color: #52525b; }
+</style>
+
+<script>
+  (function () {
+    const fileInput = document.getElementById("{{ form.photo.id_for_label }}");
+    const img = document.getElementById("imgPreview");
+    const placeholder = document.getElementById("imgPlaceholder");
+    const clearBtn = document.getElementById("clearPhotoBtn");
+
+    function clearPreview() {
+      if (fileInput) fileInput.value = "";
+      if (img) { img.src = ""; img.classList.add("hidden"); }
+      if (placeholder) placeholder.classList.remove("hidden");
+    }
+
+    if (fileInput) {
+      fileInput.addEventListener("change", (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        const url = URL.createObjectURL(file);
+        if (img) {
+          img.src = url;
+          img.classList.remove("hidden");
+        }
+        if (placeholder) placeholder.classList.add("hidden");
+      });
+    }
+
+    if (clearBtn) {
+      clearBtn.addEventListener("click", clearPreview);
+    }
+  })();
+</script>
+{% endblock %}

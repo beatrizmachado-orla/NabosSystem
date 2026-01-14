@@ -1,0 +1,32 @@
+{% extends "core/_base.html" %}
+{% block title %}Nova captura{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-2xl rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
+  <h1 class="text-2xl font-semibold mb-2">Nova captura</h1>
+  <p class="text-zinc-400 text-sm mb-6">Essa captura será vinculada automaticamente ao seu perfil.</p>
+
+  <form method="post" enctype="multipart/form-data" class="space-y-4">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    {% for field in form %}
+      <div>
+        <label class="text-sm text-zinc-300">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+          <div class="text-red-400 text-sm mt-1">{{ field.errors }}</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    <div class="flex gap-2 pt-2">
+      <button class="rounded-xl bg-white text-zinc-900 font-medium px-4 py-2 hover:opacity-90">Salvar</button>
+      <a href="{% url 'my_profile' %}" class="rounded-xl border border-zinc-700 px-4 py-2 hover:bg-zinc-900/60">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+<style>
+  input, textarea, select{width:100%;padding:10px;border-radius:12px;background:#18181b;border:1px solid #27272a;color:#fafafa}
+</style>
+{% endblock %}
