@@ -90,17 +90,19 @@ WSGI_APPLICATION = "config.wsgi.application"
 # ----------------------------------------------------
 # DATABASE
 # ----------------------------------------------------
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("postgresql://nabosystem_user:blZ423LQgNjb61QWGqomar5LRBVgyA3C@dpg-d5jv4evpm1nc73cb96n0-a/nabosystem")
 
 if DATABASE_URL:
-    # Render Postgres
     DATABASES = {
-        "default": dj_database_url.parse(
-            DATABASE_URL,
-            conn_max_age=600,
-            ssl_require=True,
-        )
-    }
+  "default": {
+    "ENGINE": "django.db.backends.postgresql",
+    "NAME": "nabosystem",
+    "USER": "nabosystem_user.",
+    "PASSWORD": "blZ423LQgNjb61QWGqomar5LRBVgyA3C",
+    "HOST": "dpg-d5jv4evpm1nc73cb96n0-a",
+    "PORT": "5432",
+  }
+}
 else:
     # Local SQLite
     DATABASES = {
