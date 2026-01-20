@@ -1,0 +1,88 @@
+{# recebe: s (Species) e activity (low|medium|high) #}
+<a href="{% url 'species_detail' s.slug %}"
+   class="group block rounded-3xl border border-zinc-800 bg-zinc-900/40 p-5 hover:bg-zinc-900/60 transition">
+
+  <div class="flex items-start gap-4">
+    <div class="min-w-0 flex-1">
+      <div class="text-lg font-semibold truncate">{{ s.name }}</div>
+
+      {% if s.scientific_name %}
+        <div class="text-xs text-zinc-400 italic truncate">{{ s.scientific_name }}</div>
+      {% endif %}
+
+      <p class="mt-3 text-sm text-zinc-300 leading-relaxed line-clamp-3">
+        {% if s.summary %}{{ s.summary }}{% else %}
+          Espécie monitorada na plataforma, com dicas de habitat, comportamento e iscas.
+        {% endif %}
+      </p>
+    </div>
+
+    <div class="h-16 w-16 rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-950/40 shrink-0">
+      {% if s.cover_image %}
+        <img src="{{ s.cover_image }}" alt="{{ s.name }}" class="h-full w-full object-cover">
+      {% else %}
+        <div class="h-full w-full flex items-center justify-center text-zinc-400">🐟</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="mt-4 flex flex-wrap gap-2 text-xs">
+    {% if s.habitats %}
+      <span class="px-2.5 py-1 rounded-full border border-zinc-800 bg-zinc-950/40 text-zinc-300">
+        {{ s.habitats|truncatechars:28 }}
+      </span>
+    {% endif %}
+    {% if s.best_times %}
+      <span class="px-2.5 py-1 rounded-full border border-zinc-800 bg-zinc-950/40 text-zinc-300">
+        {{ s.best_times|truncatechars:28 }}
+      </span>
+    {% endif %}
+    <span class="px-2.5 py-1 rounded-full border border-zinc-800 bg-zinc-950/40 text-zinc-300">
+      Mín: {{ s.min_length_cm }} cm
+    </span>
+  </div>
+
+  {% if s.bait_ideas.all %}
+    <div class="mt-4 text-xs text-zinc-400">
+      <span class="text-zinc-300">Iscas:</span>
+      {% for b in s.bait_ideas.all|slice:":3" %}
+        <span class="inline-flex items-center gap-1 mr-2">
+          🎣 <span class="text-zinc-200">{{ b.bait_name }}</span>
+        </span>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="mt-5 flex items-center justify-between gap-3">
+    <div>
+      <div class="text-xs text-zinc-500 mb-1">Comportamento</div>
+
+      {% if activity == "high" %}
+        <span class="inline-flex items-center gap-2 rounded-full px-3 py-1.5 bg-emerald-500/15 text-emerald-300 border border-emerald-900/40">
+          🟢 Agressivo
+        </span>
+      {% elif activity == "medium" %}
+        <span class="inline-flex items-center gap-2 rounded-full px-3 py-1.5 bg-yellow-500/15 text-yellow-300 border border-yellow-900/40">
+          🟡 Ativo
+        </span>
+      {% else %}
+        <span class="inline-flex items-center gap-2 rounded-full px-3 py-1.5 bg-red-500/15 text-red-300 border border-red-900/40">
+          🔴 Manhoso
+        </span>
+      {% endif %}
+    </div>
+
+    <span class="text-sm text-zinc-300 group-hover:text-white transition">
+      Ver perfil →
+    </span>
+  </div>
+</a>
+
+<style>
+  .line-clamp-3{
+    display:-webkit-box;
+    -webkit-line-clamp:3;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+</style>

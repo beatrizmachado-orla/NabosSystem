@@ -44,6 +44,18 @@ class Species(models.Model):
 
     def __str__(self):
         return self.name
+    
+    @property
+    def cover_image(self):
+        # 1) primeira foto cadastrada
+        photo = self.photos.first()
+        if photo and photo.image:
+            return photo.image.url
+        # 2) fallback URL
+        if self.image_url:
+            return self.image_url
+        return None
+
 
 
 class Catch(models.Model):

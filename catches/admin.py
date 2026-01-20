@@ -17,11 +17,14 @@ from .services.wikipedia import (
 class SpeciesPhotoInline(admin.TabularInline):
     model = SpeciesPhoto
     extra = 1
+    fields = ("image", "caption", "created_at")
+    readonly_fields = ("created_at",)
 
 
 class SpeciesBaitIdeaInline(admin.TabularInline):
     model = SpeciesBaitIdea
     extra = 1
+    fields = ("bait_name", "notes")
 
 
 def fmt_decimal_br(value: Decimal | None) -> str:
@@ -45,18 +48,34 @@ class SpeciesAdmin(admin.ModelAdmin):
     inlines = [SpeciesPhotoInline, SpeciesBaitIdeaInline]
 
     list_display = (
+        "cover_thumb",
         "name",
         "min_length_fmt",
         "points_per_cm_fmt",
+        "is_competition_allowed",
         "wiki_status",
         "wiki_update_btn",
         "updated_at",
     )
+    list_filter = ("is_competition_allowed",)
     search_fields = ("name", "scientific_name", "slug", "wikipedia_title")
     prepopulated_fields = {"slug": ("name",)}
     ordering = ("name",)
 
     actions = ["fetch_from_wikipedia_action"]
+
+    @admin.display(description="Foto")
+    def cover_thumb(self, obj: Species):
+        url = getattr(obj, "cover_image", None)
+        # cover_image é @property no seu model, retorna url ou None
+        if callable(url):
+            url = url()
+        if not url:
+            return format_html("<span style='color:#999'>—</span>")
+        return format_html(
+            "<img src='{}' style='height:38px;width:60px;object-fit:cover;border-radius:8px;border:1px solid #333;'/>",
+            url
+        )
 
     @admin.display(description="Comprimento mínimo (cm)", ordering="min_length_cm")
     def min_length_fmt(self, obj: Species):
@@ -103,7 +122,11 @@ class SpeciesAdmin(admin.ModelAdmin):
         updated = self._enrich_species_from_wiki(species)
 
         if updated:
-            self.message_user(request, f"Espécie '{species.name}' atualizada via Wikipedia.", level=messages.SUCCESS)
+            self.message_user(
+                request,
+                f"Espécie '{species.name}' atualizada via Wikipedia.",
+                level=messages.SUCCESS
+            )
         else:
             self.message_user(
                 request,
@@ -143,19 +166,16 @@ class SpeciesAdmin(admin.ModelAdmin):
 
         changed = False
 
-        # summary
         summary = data.get("summary")
         if summary and (not species.summary or species.summary.strip() == ""):
             species.summary = summary
             changed = True
 
-        # image_url
         image_url = data.get("image_url")
         if image_url and (not species.image_url or species.image_url.strip() == ""):
             species.image_url = image_url
             changed = True
 
-        # scientific_name (heurística, só se estiver vazio)
         if not species.scientific_name and summary:
             sci = try_extract_scientific_name_from_summary(summary)
             if sci:

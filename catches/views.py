@@ -93,19 +93,16 @@ class CompetitionSpeciesListView(ListView):
     paginate_by = 24
 
     def get_queryset(self):
+        q = (self.request.GET.get("q") or "").strip()
         qs = (
             Species.objects
-            .filter(is_competition_allowed=True)  # <-- só as aceitas
+            .filter(is_competition_allowed=True)
             .annotate(catches_count=Count("catches"))
+            .prefetch_related("photos")
             .order_by("name")
-            .prefetch_related("photos", "bait_ideas")
         )
-
-        # busca opcional
-        q = (self.request.GET.get("q") or "").strip()
         if q:
             qs = qs.filter(name__icontains=q)
-
         return qs
 
     def get_context_data(self, **kwargs):
