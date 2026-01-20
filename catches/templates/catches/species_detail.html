@@ -6,11 +6,13 @@
 
   <!-- HEADER -->
   <section class="grid gap-6 lg:grid-cols-2">
-    <div class="rounded-3xl h-[60%] overflow-hidden border border-zinc-200 bg-zinc-950/40">
+    <div class="rounded-3xl overflow-hidden border border-zinc-200 bg-zinc-950/40">
       {% if species.image_url %}
-        <img src="{{ species.image_url }}" alt="{{ species.name }}" class="w-full h-[100%] object-cover">
+        <div class="aspect-[4/3]">
+          <img src="{{ species.image_url }}" alt="{{ species.name }}" class="w-full h-full object-cover">
+        </div>
       {% else %}
-        <div class="h-auto flex items-center justify-center text-zinc-500">Sem imagem</div>
+        <div class="aspect-[4/3] flex items-center justify-center text-zinc-500">Imagem não informada</div>
       {% endif %}
     </div>
 
@@ -41,7 +43,7 @@
       {% if species.summary %}
         <p class="text-zinc-300 leading-relaxed whitespace-pre-line">{{ species.summary }}</p>
       {% else %}
-        <p class="text-zinc-500">Sem resumo ainda. Preencha o <b>Título na Wikipedia</b> e atualize pelo admin.</p>
+        <p class="text-zinc-500">Resumo em atualização. Preencha o <b>Título na Wikipedia</b> e atualize pelo admin.</p>
       {% endif %}
 
       {% if species.best_times %}
@@ -125,7 +127,7 @@
               {% if c.photo %}
                 <img src="{{ c.photo.url }}" class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300">
               {% else %}
-                <div class="w-full h-full flex items-center justify-center text-zinc-500 text-sm">Sem foto</div>
+                <div class="w-full h-full flex items-center justify-center text-zinc-500 text-sm">Foto não informada</div>
               {% endif %}
             </div>
             <div class="p-4 text-sm">

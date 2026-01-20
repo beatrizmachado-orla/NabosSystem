@@ -29,23 +29,23 @@
   </div>
 </section>
 
-<!-- GRID (forçado pra não achatar) -->
+<!-- GRID -->
 <section class="mx-auto max-w-6xl">
   <div class="[display:grid] gap-4 sm:gap-5
-              [grid-template-columns:repeat(auto-fit,minmax(240px,1fr))]">
+              [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
 
     {% for s in supporters %}
       {% if s.website %}
         <a href="{{ s.website }}" target="_blank" rel="noopener"
-           class="group rounded-2xl border border-zinc-800 bg-white/80 p-5 hover:bg-zinc-900/70 transition">
+           class="group rounded-2xl border border-zinc-800 bg-zinc-950/40 p-5 hover:bg-zinc-900/70 transition">
           <div class="flex items-start justify-between gap-4">
             <div class="min-w-0">
-              <div class="text-sm text-zinc-800 group-hover:text-white transition">Apoiador</div>
-              <div class="mt-1 font-medium text-black truncate group-hover:text-white transition">
+              <div class="text-sm text-zinc-400">Apoiador</div>
+              <div class="mt-1 font-medium text-white truncate">
                 {{ s.name }}
               </div>
             </div>
-            <span class="text-xs text-black group-hover:text-zinc-300 transition">
+            <span class="text-xs text-zinc-300 group-hover:text-white transition">
               Visitar →
             </span>
           </div>
@@ -54,19 +54,19 @@
             {% if s.logo %}
               <img src="{{ s.logo.url }}" class="h-48 max-w-[85%] object-contain" alt="{{ s.name }}">
             {% else %}
-              <span class="text-zinc-800 text-sm">Sem logo</span>
+              <span class="text-zinc-400 text-sm">Logo não informado</span>
             {% endif %}
           </div>
 
-          <div class="mt-4 text-xs text-black group-hover:text-white transition">
+          <div class="mt-4 text-xs text-zinc-400 group-hover:text-zinc-200 transition">
             Obrigado por apoiar a comunidade 🎣
           </div>
         </a>
       {% else %}
         <div
-          class="rounded-2xl border border-zinc-800 bg-white/80 p-5 opacity-95">
-          <div class="text-sm text-zinc-800">Apoiador</div>
-          <div class="mt-1 font-medium text-black truncate">
+          class="rounded-2xl border border-zinc-800 bg-zinc-950/40 p-5">
+          <div class="text-sm text-zinc-400">Apoiador</div>
+          <div class="mt-1 font-medium text-white truncate">
             {{ s.name }}
           </div>
 
@@ -74,19 +74,19 @@
             {% if s.logo %}
               <img src="{{ s.logo.url }}" class="h-48 max-w-[85%] object-contain" alt="{{ s.name }}">
             {% else %}
-              <span class="text-zinc-200 text-sm">Sem logo</span>
+              <span class="text-zinc-400 text-sm">Logo não informado</span>
             {% endif %}
           </div>
 
-          <div class="mt-4 text-xs text-black">
-            Site não informado
+          <div class="mt-4 text-xs text-zinc-400">
+            Site ainda não informado
           </div>
         </div>
       {% endif %}
 
     {% empty %}
       <div class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 text-zinc-200">
-        Nenhum apoiador cadastrado ainda.
+        Ainda não há apoiadores cadastrados.
       </div>
     {% endfor %}
   </div>

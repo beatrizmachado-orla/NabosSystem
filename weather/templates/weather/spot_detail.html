@@ -8,18 +8,18 @@
   <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
 
     <!-- Left -->
-    <div class="min-w-[100vw]">
+    <div class="min-w-0">
       <div class="flex items-center gap-3 flex-wrap">
         <h1 class="text-3xl font-semibold tracking-tight truncate">{{ spot.name }}</h1>
 
-        <!-- Badge geral (bom/ruim) -->
+        <!-- Status geral -->
         {% if is_good_for_fishing %}
           <span class="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 px-3 py-1 text-xs font-semibold">
             🟢 Condição boa
           </span>
         {% else %}
-          <span class="inline-flex items-center gap-2 rounded-full bg-red-500/10 text-red-300 border border-red-500/20 px-3 py-1 text-xs font-semibold">
-            🔴 Condição desfavorável
+          <span class="inline-flex items-center gap-2 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20 px-3 py-1 text-xs font-semibold">
+            🟡 Condição de atenção
           </span>
         {% endif %}
       </div>
@@ -27,8 +27,19 @@
       <!-- meta -->
       <p class="text-zinc-400 text-sm mt-1">
         {% if spot.city %}{{ spot.city }}{% endif %}{% if spot.state %} • {{ spot.state }}{% endif %}
-        Lat: {{ spot.latitude }}, Log: {{ spot.longitude }}
+        • Lat: {{ spot.latitude }}, Long: {{ spot.longitude }}
       </p>
+
+      <div class="mt-3 flex flex-wrap items-center gap-2 text-xs">
+        <a href="https://www.google.com/maps?q={{ spot.latitude }},{{ spot.longitude }}"
+           target="_blank" rel="noopener"
+           class="rounded-full border border-zinc-800 bg-zinc-900/40 px-3 py-1 text-zinc-300 hover:text-white transition">
+          Abrir no mapa →
+        </a>
+        <span class="rounded-full border border-zinc-800 bg-zinc-900/40 px-3 py-1 text-zinc-400">
+          Atualização automática via Stormglass
+        </span>
+      </div>
 
       <!-- Resumo em frase (mantendo sua construção) -->
       <div class="mt-4 text-sm leading-relaxed text-zinc-200">
@@ -70,7 +81,7 @@
 {% if current_hour %}
 
 <!-- Cards grandes -->
-<section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4">
+<section class="grid gap-4 grid-cols-2 lg:grid-cols-4 mb-4">
   <div class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-4">
     <div class="text-xs text-zinc-400">Onda</div>
     <div class="text-2xl font-semibold mt-1">
@@ -101,7 +112,7 @@
 </section>
 
 <!-- Cards de status -->
-<section class="grid gap-4 grid-cols-1 sm:grid-cols-3 mb-8">
+<section class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mb-8">
   <!-- Mar -->
   <div class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-4">
     <div class="text-xs text-zinc-400 mb-1">Mar</div>

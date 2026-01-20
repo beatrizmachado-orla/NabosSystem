@@ -1,4 +1,5 @@
 {% extends "core/_base.html" %}
+{% load static %}
 {% block title %}Ranking • Equipe Nabos{% endblock %}
 
 {% block content %}
@@ -72,74 +73,69 @@
         <span class="text-xs text-zinc-400">Top 3</span>
       </div>
 
-      <div class="grid grid-cols-3 items-end gap-4">
+      <div class="relative rounded-2xl border border-zinc-800 overflow-hidden">
+        <img src="{% static "assets/ranking.png" %}" alt="Pódio do ranking"
+             class="w-full h-auto object-cover block mx-auto">
 
-        <!-- 2º -->
-        <a href="{% if podium_2 %}{% url 'member_detail' podium_2.member.id %}{% else %}#{% endif %}"
-           class="text-center group">
-          <div class="text-xs text-zinc-400 mb-2">02</div>
+        <!-- Avatares alinhados ao pódio -->
+        <div class="absolute inset-0">
+          <!-- 2º -->
+          <a href="{% if podium_2 %}{% url 'member_detail' podium_2.member.id %}{% else %}#{% endif %}"
+             class="absolute left-[12%] bottom-[18%] sm:bottom-[20%] text-center group translate-x-[4px]">
+            <div class="mx-auto h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-zinc-800 overflow-hidden ring-1 ring-zinc-700 group-hover:ring-zinc-500 transition">
+              {% if podium_2 and podium_2.member.photo %}
+                <img src="{{ podium_2.member.photo.url }}" class="h-full w-full object-cover" alt="{{ podium_2.member.name }}">
+              {% endif %}
+            </div>
+            <div class="mt-2 text-[11px] sm:text-xs text-zinc-200 truncate max-w-[90px] sm:max-w-[120px]
+                        rounded-full border border-zinc-700/60 bg-black/60 px-2 py-1 backdrop-blur">
+              {% if podium_2 %}{{ podium_2.member.name }}{% else %}—{% endif %}
+            </div>
+          </a>
 
-          <div class="mx-auto h-14 w-14 rounded-full bg-zinc-800 overflow-hidden ring-1 ring-zinc-700 group-hover:ring-zinc-500 transition">
-            {% if podium_2 and podium_2.member.photo %}
-              <img src="{{ podium_2.member.photo.url }}" class="h-full w-full object-cover" alt="{{ podium_2.member.name }}">
-            {% endif %}
-          </div>
+          <!-- 1º -->
+          <a href="{% if podium_1 %}{% url 'member_detail' podium_1.member.id %}{% else %}#{% endif %}"
+             class="absolute left-1/2 -translate-x-1/2 bottom-[30%] sm:bottom-[34%] text-center group translate-x-[-43%]">
+            <div class="mx-auto h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-zinc-800 overflow-hidden ring-2 ring-zinc-600 group-hover:ring-zinc-400 transition">
+              {% if podium_1 and podium_1.member.photo %}
+                <img src="{{ podium_1.member.photo.url }}" class="h-full w-full object-cover" alt="{{ podium_1.member.name }}">
+              {% endif %}
+            </div>
+            <div class="mt-2 text-xs sm:text-sm text-zinc-100 font-medium truncate max-w-[110px] sm:max-w-[140px]
+                        rounded-full border border-zinc-700/60 bg-black/60 px-2 py-1 backdrop-blur">
+              {% if podium_1 %}{{ podium_1.member.name }}{% else %}—{% endif %}
+            </div>
+          </a>
 
-          <div class="mt-3 text-sm font-medium truncate group-hover:text-white transition">
-            {% if podium_2 %}{{ podium_2.member.name }}{% else %}—{% endif %}
-          </div>
-          <div class="text-xs text-zinc-400">
-            {% if podium_2 %}{{ podium_2.points|floatformat:0 }} pts{% else %}0 pts{% endif %}
-          </div>
-
-          <div class="mt-3 h-16 rounded-2xl bg-zinc-950/40 border border-zinc-800 group-hover:bg-zinc-950/60 transition"></div>
-        </a>
-
-        <!-- 1º -->
-        <a href="{% if podium_1 %}{% url 'member_detail' podium_1.member.id %}{% else %}#{% endif %}"
-           class="text-center group">
-          <div class="text-xs text-zinc-300 mb-2">01</div>
-
-          <div class="mx-auto h-20 w-20 rounded-full bg-zinc-800 overflow-hidden ring-2 ring-zinc-600 group-hover:ring-zinc-400 transition">
-            {% if podium_1 and podium_1.member.photo %}
-              <img src="{{ podium_1.member.photo.url }}" class="h-full w-full object-cover" alt="{{ podium_1.member.name }}">
-            {% endif %}
-          </div>
-
-          <div class="mt-3 text-base font-semibold truncate group-hover:text-white transition">
-            {% if podium_1 %}{{ podium_1.member.name }}{% else %}—{% endif %}
-          </div>
-          <div class="text-sm text-zinc-300">
-            {% if podium_1 %}{{ podium_1.points|floatformat:0 }} pts{% else %}0 pts{% endif %}
-          </div>
-
-          <div class="mt-3 h-24 rounded-2xl bg-zinc-950/40 border border-zinc-800 group-hover:bg-zinc-950/60 transition"></div>
-        </a>
-
-        <!-- 3º -->
-        <a href="{% if podium_3 %}{% url 'member_detail' podium_3.member.id %}{% else %}#{% endif %}"
-           class="text-center group">
-          <div class="text-xs text-zinc-400 mb-2">03</div>
-
-          <div class="mx-auto h-14 w-14 rounded-full bg-zinc-800 overflow-hidden ring-1 ring-zinc-700 group-hover:ring-zinc-500 transition">
-            {% if podium_3 and podium_3.member.photo %}
-              <img src="{{ podium_3.member.photo.url }}" class="h-full w-full object-cover" alt="{{ podium_3.member.name }}">
-            {% endif %}
-          </div>
-
-          <div class="mt-3 text-sm font-medium truncate group-hover:text-white transition">
-            {% if podium_3 %}{{ podium_3.member.name }}{% else %}—{% endif %}
-          </div>
-          <div class="text-xs text-zinc-400">
-            {% if podium_3 %}{{ podium_3.points|floatformat:0 }} pts{% else %}0 pts{% endif %}
-          </div>
-
-          <div class="mt-3 h-12 rounded-2xl bg-zinc-950/40 border border-zinc-800 group-hover:bg-zinc-950/60 transition"></div>
-        </a>
-
+          <!-- 3º -->
+          <a href="{% if podium_3 %}{% url 'member_detail' podium_3.member.id %}{% else %}#{% endif %}"
+             class="absolute right-[12%] bottom-[12%] sm:bottom-[16%] text-center group translate-x-[4px]">
+            <div class="mx-auto h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-zinc-800 overflow-hidden ring-1 ring-zinc-700 group-hover:ring-zinc-500 transition">
+              {% if podium_3 and podium_3.member.photo %}
+                <img src="{{ podium_3.member.photo.url }}" class="h-full w-full object-cover" alt="{{ podium_3.member.name }}">
+              {% endif %}
+            </div>
+            <div class="mt-2 text-[11px] sm:text-xs text-zinc-200 truncate max-w-[90px] sm:max-w-[120px]
+                        rounded-full border border-zinc-700/60 bg-black/60 px-2 py-1 backdrop-blur">
+              {% if podium_3 %}{{ podium_3.member.name }}{% else %}—{% endif %}
+            </div>
+          </a>
+        </div>
       </div>
 
-      <div class="mt-6 text-xs text-zinc-500">
+      <div class="mt-4 grid grid-cols-3 gap-3 text-xs text-zinc-400">
+        <div class="text-center">
+          {% if podium_2 %}{{ podium_2.points|floatformat:0 }} pts{% else %}0 pts{% endif %}
+        </div>
+        <div class="text-center">
+          {% if podium_1 %}{{ podium_1.points|floatformat:0 }} pts{% else %}0 pts{% endif %}
+        </div>
+        <div class="text-center">
+          {% if podium_3 %}{{ podium_3.points|floatformat:0 }} pts{% else %}0 pts{% endif %}
+        </div>
+      </div>
+
+      <div class="mt-4 text-xs text-zinc-500">
         Dica: clique em qualquer pessoa do pódio para abrir o perfil.
       </div>
     </div>

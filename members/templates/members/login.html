@@ -1,32 +1,46 @@
 {% extends "core/_base.html" %}
 {% block title %}Login{% endblock %}
 {% block content %}
-<div class="mx-auto max-w-md rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
-  <h1 class="text-2xl font-semibold mb-2">Entrar</h1>
-  <p class="text-zinc-400 text-sm mb-6">Acesse para ver seu perfil e registrar capturas.</p>
+<div class="mx-auto max-w-3xl grid gap-6 md:grid-cols-[1fr_280px]">
+  <section class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
+    <h1 class="text-2xl font-semibold mb-2">Entrar</h1>
+    <p class="text-zinc-400 text-sm mb-6">Acesse para ver seu perfil e registrar capturas.</p>
 
-  <form method="post" class="space-y-4">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
 
-    <div>
-      <label class="text-sm text-zinc-300">Usuário</label>
-      {{ form.username }}
+      <div>
+        <label class="text-sm text-zinc-300">Usuário</label>
+        {{ form.username }}
+      </div>
+
+      <div>
+        <label class="text-sm text-zinc-300">Senha</label>
+        {{ form.password }}
+      </div>
+
+      <button class="w-full rounded-xl bg-white text-zinc-900 font-medium py-2 hover:opacity-90">
+        Entrar
+      </button>
+    </form>
+
+    <div class="mt-5 text-sm text-zinc-400">
+      Não tem conta? <a class="text-white underline" href="{% url 'signup' %}">Criar cadastro</a>
     </div>
+  </section>
 
-    <div>
-      <label class="text-sm text-zinc-300">Senha</label>
-      {{ form.password }}
+  <aside class="rounded-2xl border border-zinc-800 bg-zinc-950/40 p-5 h-fit">
+    <div class="text-sm text-zinc-300 mb-3">Com sua conta você pode:</div>
+    <ul class="text-sm text-zinc-400 space-y-2">
+      <li>🎣 Registrar capturas e fotos</li>
+      <li>🏆 Somar pontos no ranking</li>
+      <li>👥 Fazer parte do grupo</li>
+    </ul>
+    <div class="mt-4 text-xs text-zinc-500">
+      Seus dados ficam visíveis apenas no contexto do grupo.
     </div>
-
-    <button class="w-full rounded-xl bg-white text-zinc-900 font-medium py-2 hover:opacity-90">
-      Entrar
-    </button>
-  </form>
-
-  <div class="mt-5 text-sm text-zinc-400">
-    Não tem conta? <a class="text-white underline" href="{% url 'signup' %}">Criar cadastro</a>
-  </div>
+  </aside>
 </div>
 
 <style>
