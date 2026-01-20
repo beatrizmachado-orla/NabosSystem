@@ -90,7 +90,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 # ----------------------------------------------------
 # DATABASE
 # ----------------------------------------------------
-DATABASE_URL = os.getenv("postgresql://nabosystem_user:blZ423LQgNjb61QWGqomar5LRBVgyA3C@dpg-d5jv4evpm1nc73cb96n0-a/nabosystem")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 if DATABASE_URL:
     DATABASES = {
