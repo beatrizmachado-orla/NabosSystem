@@ -1,3 +1,4 @@
+{% load static %}
 <!doctype html>
 <html lang="pt-br">
 <head>
@@ -15,7 +16,7 @@
         <!-- Brand -->
         <a href="{% url 'home' %}" class="flex items-center gap-3 group">
           <div class="h-10 w-10 rounded-xl flex items-center justify-center">
-            <span class="text-lg"><img src="{{ MEDIA_URL }}assets/logo/logo_nabos.png"></span>
+            <span class="text-lg"><img src="{% static "assets/logo/logo_nabos.png" %}"></span>
           </div>
           <div class="leading-tight">
             <div class="font-semibold tracking-tight group-hover:text-white">Equipe Nabos</div>
@@ -87,7 +88,7 @@
     <div class="flex items-center justify-between">
       <a href="{% url 'home' %}" class="flex items-center gap-3">
         <div class="h-9 w-9 rounded-xl bg-zinc-900/50 border border-zinc-800 flex items-center justify-center overflow-hidden">
-          <img src="{{ MEDIA_URL }}assets/logo/logo_nabos.png" alt="Equipe Nabos" class="h-full w-full object-contain p-1">
+          <img src="{% static "assets/logo/logo_nabos.png" %}" alt="Equipe Nabos" class="h-full w-full object-contain p-1">
         </div>
         <div class="leading-tight">
           <div class="font-semibold">Equipe Nabos</div>
@@ -206,7 +207,7 @@
       <div class="space-y-3">
         <div class="flex items-center gap-3">
           <div class="h-60 w-60  flex items-center justify-center overflow-hidden">
-            <img src="{{ MEDIA_URL }}assets/logo/logo_nabos.png"
+            <img src="{% static "assets/logo/logo_nabos.png" %}"
                  alt="Equipe Nabos"
                  class="h-full w-full object-contain p-1">
           </div>
@@ -258,7 +259,7 @@
     position: relative;
     min-height: 100vh;
 
-    background-image: url("/media/assets/bg.png");
+    background-image: url("{% static "assets/bg.png" %}");
     background-repeat: repeat;
     background-size: auto;
     background-position: top left;

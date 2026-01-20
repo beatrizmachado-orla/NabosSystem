@@ -1,6 +1,6 @@
 {% extends "core/_base.html" %}
 {% block title %}Home • Kayak Fishing{% endblock %}
-
+{% load static %}
 {% block content %}
 
 <!-- HERO -->
@@ -94,7 +94,7 @@
     <div class="relative">
       <div class="rounded-3xl border border-zinc-800 bg-zinc-900/30 overflow-hidden">
         <div class="aspect-video bg-zinc-900 overflow-hidden">
-          <img src="{{ MEDIA_URL }}assets/Hero.jpeg" alt="Equipe Nabos"
+          <img src="{% static "assets/Hero.jpeg" %}" alt="Equipe Nabos"
                class="w-full h-full object-cover">
         </div>
 
@@ -348,7 +348,7 @@
 <!-- Peixinho flutuando (mantido como você pediu) -->
 <div id="floating-fish" aria-hidden="true">
   <button id="floating-fish-btn" type="button" title="Clique para esconder">
-    <img src="{{ MEDIA_URL }}assets/Romario.gif" alt="">
+    <img src="{% static "assets/Romario.gif" %}" alt="">
   </button>
 </div>
 <style>
@@ -427,7 +427,7 @@
 
     btn.addEventListener("click", function () {
       // troca o gif para "explosion/point"
-      img.src = "{{ MEDIA_URL }}assets/explosion.gif";
+      img.src = "{% static "assets/explosion.gif" %}";
 
       // congela o movimento (pra animação de sumiço ficar consistente)
       btn.style.animationPlayState = "paused";

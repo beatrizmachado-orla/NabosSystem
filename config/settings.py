@@ -18,7 +18,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-insecure-secret-key")
 
 # Render: DEBUG=0 (False)
-DEBUG = os.getenv("DEBUG", "0") == "1"
+# Local default: DEBUG=1
+DEBUG = os.getenv("DEBUG", "1") == "1"
 
 # Hosts (no Render coloque seu domínio/URL, ou deixe "*" enquanto testa)
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
@@ -134,8 +135,11 @@ STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = os.getenv("MEDIA_URL", "/media/")
+MEDIA_ROOT = Path(os.getenv("MEDIA_ROOT", BASE_DIR / "media"))
+
+# Permite servir media via Django quando necessário (ex: ambiente sem proxy)
+SERVE_MEDIA = os.getenv("SERVE_MEDIA", "0") == "1"
 
 # ----------------------------------------------------
 # DEFAULT PRIMARY KEY
