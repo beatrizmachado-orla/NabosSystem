@@ -97,7 +97,7 @@ if DATABASE_URL:
   "default": {
     "ENGINE": "django.db.backends.postgresql",
     "NAME": "nabosystem",
-    "USER": "nabosystem_user.",
+    "USER": "nabosystem_user",
     "PASSWORD": "blZ423LQgNjb61QWGqomar5LRBVgyA3C",
     "HOST": "dpg-d5jv4evpm1nc73cb96n0-a",
     "PORT": "5432",
